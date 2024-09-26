@@ -36,6 +36,13 @@ const Navbar: React.FC = () => {
               to="/services"
               className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
             >
+              Services
+            </Link>
+            <Link
+              // onClick={() => handleNavigation("/products")}
+              to="/booking"
+              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+            >
               Booking
             </Link>
 
@@ -44,9 +51,6 @@ const Navbar: React.FC = () => {
               className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
             >
               Admin Panel
-              <div className="badge badge-secondary ml-1">
-                {/* {cartItems.length} */}
-              </div>
             </Link>
 
             <Link
@@ -108,7 +112,7 @@ const Navbar: React.FC = () => {
               Services
             </Link>
             <Link
-              to="/bookings"
+              to="/booking"
               className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
             >
               Bookings{" "}

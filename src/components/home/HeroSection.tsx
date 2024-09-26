@@ -15,6 +15,10 @@ import sliderImage4 from "@/assets/carSlider-4.jpg";
 export function HeroSection() {
   const sliderData = [
     {
+      id: 3,
+      image: sliderImage3,
+    },
+    {
       id: 1,
       image: sliderImage1,
     },
@@ -22,10 +26,7 @@ export function HeroSection() {
       id: 2,
       image: sliderImage2,
     },
-    {
-      id: 3,
-      image: sliderImage3,
-    },
+
     {
       id: 4,
       image: sliderImage4,

@@ -8,8 +8,8 @@ export const baseAPi = createApi({
   endpoints: (builder) => ({
     getAllServices: builder.query({
       query: () => ({
-        method: "GET",
         url: "/services",
+        method: "GET",
       }),
     }),
   }),
