@@ -1,13 +1,24 @@
+import { useLoginUserMutation } from "@/redux/api/baseApi";
+import { setUser } from "@/redux/features/authSlice";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom"; // Use Link if you are using React Router
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch(); // Initialize dispatch
+
   const [showModal, setShowModal] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const [loginUser, { data, error, isLoading, isSuccess }] =
+    useLoginUserMutation();
+  console.log("user", data?.data?.userInfo);
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -28,28 +39,32 @@ const Login: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
-      // Handle form submission, e.g., API call
-      console.log(formData);
-
-      setShowModal(true);
+      loginUser({ email: formData.email, password: formData.password });
     }
   };
 
   useEffect(() => {
-    if (showModal) {
+    if (isSuccess && data) {
+      // Dispatch the setUser action to store the user data in Redux
+      dispatch(
+        setUser({
+          user: data?.data?.userInfo, // Assuming the user data is in the response
+          token: data.token, // Assuming the token is in the response
+        })
+      );
+
+      setShowModal(true);
       const timer = setTimeout(() => {
         setShowModal(false);
+        navigate("/"); // Redirect to home page
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [showModal]);
+  }, [isSuccess, data, dispatch, navigate]);
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-        <span className="text-red-500">
-          It's not complete yet but you can register
-        </span>
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -94,7 +109,7 @@ const Login: React.FC = () => {
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            Login
+            {isLoading ? "Logging in..." : "Login"}
           </button>
           <div className="flex justify-between items-center mt-4">
             <Link
@@ -111,6 +126,12 @@ const Login: React.FC = () => {
             </Link>
           </div>
         </form>
+
+        {error && (
+          <p className="text-red-500 mt-2">
+            Login failed: {error?.data?.message || "Something went wrong"}
+          </p>
+        )}
       </div>
 
       {/* Success Modal */}

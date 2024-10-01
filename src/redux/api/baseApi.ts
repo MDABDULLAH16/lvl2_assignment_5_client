@@ -12,9 +12,16 @@ export const baseAPi = createApi({
         method: "GET",
       }),
     }),
+    loginUser: builder.mutation({
+      query: (credentials: { email: string; password: string }) => ({
+        url: "/auth/login",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetAllServicesQuery } = baseAPi;
+export const { useGetAllServicesQuery, useLoginUserMutation } = baseAPi;

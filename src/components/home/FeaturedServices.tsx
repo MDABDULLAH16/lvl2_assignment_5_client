@@ -6,7 +6,7 @@ import { TService } from "@/types/TServices";
 const FeaturedServices: React.FC = () => {
   const { data: products, isLoading, isError } = useGetAllServicesQuery({});
   //   const navigate = useNavigate();
-  console.log(products);
+  // console.log(products);
 
   const shuffleArray = (array: TService[]) => {
     const copy = [...array];

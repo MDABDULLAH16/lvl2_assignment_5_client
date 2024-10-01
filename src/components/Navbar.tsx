@@ -1,12 +1,26 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo_2 from "../assets/logo1.png";
+import { useDispatch, useSelector } from "react-redux";
+
+import { clearUser } from "@/redux/features/authSlice";
+import { RootState } from "@/redux/store";
 // import { useSelector } from "react-redux";
 // import { RootState } from "@/redux/store";
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // const cartItems = useSelector((state: RootState) => state.cart.items);
+  const user = useSelector((state: RootState) => state?.auth.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // Handle Logout
+  const handleLogout = () => {
+    dispatch(clearUser()); // Clear the user data from Redux
+    navigate("/login"); // Redirect to the login page
+  };
+
   // Toggle mobile menu visibility
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -59,12 +73,22 @@ const Navbar: React.FC = () => {
             >
               About Us
             </Link>
-            <Link
-              to="/login"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-            >
-              Login
-            </Link>
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-white font-bold"> {user.name}</span>{" "}
+                {/* Display user's name */}
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="text-blue-400">
+                Login
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button (Hamburger icon) */}
@@ -124,12 +148,22 @@ const Navbar: React.FC = () => {
             >
               About Us
             </Link>
-            <Link
-              to="/login"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-            >
-              Login
-            </Link>
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-white font-bold">{user.name}</span>
+                {/* Display user's name */}
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="text-blue-400">
+                Login
+              </Link>
+            )}
           </div>
         </div>
       )}
