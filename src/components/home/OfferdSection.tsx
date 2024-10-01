@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const OfferedSection: React.FC = () => {
   return (
@@ -11,7 +12,9 @@ const OfferedSection: React.FC = () => {
             Are you looking for washing car? we are providing best services for
             you. you can check our services.
           </p>
-          <button className="btn btn-primary">Get Started</button>
+          <Link to="/services">
+            <button className="btn btn-primary">Get Started</button>
+          </Link>
         </div>
       </div>
     </div>
