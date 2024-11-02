@@ -1,10 +1,13 @@
-// Need to use the React-specific entry point to import createApi
+// baseApi.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // Define a service using a base URL and expected endpoints
-export const baseAPi = createApi({
+export const baseApi = createApi({
   reducerPath: "baseApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://localhost:5000/api",
+    credentials: "include",
+  }),
   endpoints: (builder) => ({
     getAllServices: builder.query({
       query: () => ({
@@ -12,11 +15,36 @@ export const baseAPi = createApi({
         method: "GET",
       }),
     }),
+    getSingleService: builder.query({
+      query: (_id) => ({
+        url: `/services/${_id}`,
+        method: "GET",
+      }),
+    }),
+    getSlot: builder.query({
+      query: (_id) => ({
+        url: `/slots/${_id}`,
+        method: "GET",
+      }),
+    }),
     loginUser: builder.mutation({
-      query: (credentials: { email: string; password: string }) => ({
+      query: (userInfo) => ({
         url: "/auth/login",
         method: "POST",
-        body: credentials,
+        body: userInfo,
+      }),
+    }),
+    signUp: builder.mutation({
+      query: (userData: {
+        name: string;
+        email: string;
+        password: string;
+        phone: string;
+        address: string;
+      }) => ({
+        url: "/auth/signup",
+        method: "POST",
+        body: userData,
       }),
     }),
   }),
@@ -24,4 +52,10 @@ export const baseAPi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetAllServicesQuery, useLoginUserMutation } = baseAPi;
+export const {
+  useGetAllServicesQuery,
+  useGetSingleServiceQuery,
+  useGetSlotQuery,
+  useLoginUserMutation,
+  useSignUpMutation,
+} = baseApi;

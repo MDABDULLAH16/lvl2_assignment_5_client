@@ -1,16 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useSignUpMutation } from "@/redux/api/baseApi";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // For navigation after sign-up
 
 const Register: React.FC = () => {
-  //   const [signUp, { isLoading, isError, error }] = useSignUpMutation();
+  const [signUp, { isLoading, isError, error, isSuccess }] =
+    useSignUpMutation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     phone: "",
     address: "",
-    role: "user",
+    role: "user", // The role is defaulted to "user"
   });
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate(); // Hook for redirecting
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -24,50 +29,25 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // try {
-    //   // Attempt to sign up
-    //   await signUp(formData).unwrap(); // Use `.unwrap()` to handle errors properly
+    console.log("user data", formData);
 
-    //   // Show success modal if the request is successful
-    //   setShowModal(true);
-    // } catch {
-    //   // Errors will be handled automatically by the `error` object from useSignUpMutation
-    // }
+    try {
+      await signUp(formData).unwrap(); // Attempt to sign up
+    } catch {
+      // Handle any errors (already captured by `isError`)
+    }
   };
 
+  // Effect to handle showing the modal and redirecting after successful sign-up
   useEffect(() => {
-    if (showModal) {
-      const timer = setTimeout(() => {
+    if (isSuccess) {
+      setShowModal(true); // Show the modal on successful sign-up
+      setTimeout(() => {
         setShowModal(false);
-      }, 2000);
-      return () => clearTimeout(timer);
+        navigate("/"); // Redirect to the home page after the modal disappears
+      }, 2000); // Show the modal for 2 seconds before redirecting
     }
-  }, [showModal]);
-
-  // Function to extract error messages from the `error` object
-  //   const getErrorMessages = () => {
-  //     if (!error) return [];
-
-  //     // Assuming error format:
-  //     // { data: { errors: [{ field: 'email', message: 'Email is already in use' }] } }
-  //     // or { data: { message: 'A general error occurred.' } }
-  //     const backendError = error as any; // Replace `any` with appropriate error type if possible
-  //     const errorMessages: string[] = [];
-
-  //     if (backendError.data?.errors) {
-  //       backendError.data.errors.forEach(
-  //         (err: { field: string; message: string }) => {
-  //           errorMessages.push(err.message);
-  //         }
-  //       );
-  //     } else if (backendError.data?.message) {
-  //       errorMessages.push(backendError.data.message);
-  //     } else {
-  //       errorMessages.push("An unexpected error occurred.");
-  //     }
-
-  //     return errorMessages;
-  //   };
+  }, [isSuccess, navigate]);
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-200">
@@ -141,37 +121,22 @@ const Register: React.FC = () => {
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Role
-            </label>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500"
-              required
-            >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            {/* {isLoading ? "Signing Up..." : "Sign Up"} */}
+            {isLoading ? "Signing Up..." : "Sign Up"}
           </button>
         </form>
 
-        {/* Display all errors */}
-        {/* {isError && (
+        {isError && (
           <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-            {getErrorMessages().map((message, index) => (
-              <p key={index}>{message}</p>
-            ))}
+            <p>
+              {(error as any).data?.message ||
+                "An error occurred during sign-up"}
+            </p>
           </div>
-        )} */}
+        )}
 
         <div className="mt-4 flex justify-between">
           <a href="/login" className="text-blue-500 hover:underline text-sm">
@@ -193,7 +158,9 @@ const Register: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4 text-green-600">
               Success
             </h3>
-            <p className="mb-4">You have signed up successfully!</p>
+            <p className="mb-4">
+              You have signed up successfully! Redirecting...
+            </p>
           </div>
         </div>
       )}

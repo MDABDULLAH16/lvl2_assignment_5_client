@@ -1,18 +1,24 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo_2 from "../assets/logo1.png";
-import { useDispatch, useSelector } from "react-redux";
 
 import { clearUser } from "@/redux/features/authSlice";
 import { RootState } from "@/redux/store";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 // import { useSelector } from "react-redux";
 // import { RootState } from "@/redux/store";
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // const cartItems = useSelector((state: RootState) => state.cart.items);
-  const user = useSelector((state: RootState) => state?.auth.user);
-  const dispatch = useDispatch();
+  // const user = useAppSelector((state: RootState) => state?.auth.user);
+  const user = useAppSelector(
+    (state: RootState) => state?.userDetails.userDetails
+  );
+
+  // console.log("cc", user);
+
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   // Handle Logout

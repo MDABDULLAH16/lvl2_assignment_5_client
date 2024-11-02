@@ -1,9 +1,10 @@
 import { TService } from "@/types/TServices";
+import { useService } from "@/utils/serviceIdContext";
 import React from "react";
 
 import { Link } from "react-router-dom";
 
-const ProductCard: React.FC<TService> = ({
+const ServiceCard: React.FC<TService> = ({
   _id,
   name,
   image,
@@ -11,6 +12,8 @@ const ProductCard: React.FC<TService> = ({
   price,
   description,
 }) => {
+  const { setServiceId } = useService();
+
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 transform hover:scale-105">
       <figure className="relative w-full h-48">
@@ -25,11 +28,12 @@ const ProductCard: React.FC<TService> = ({
         <div className="flex justify-between items-center space-x-1">
           <span className="text-lg font-semibold text-blue-500">${price}</span>
           <span className="bg-gray-200 text-gray-800 text-sm px-3 py-1 rounded-lg">
-            time: {duration}
+            Time: {duration}
           </span>
           <div className="card-actions">
             <Link
-              to={`/product-details/${_id}`}
+              to={`/service-details/${_id}`}
+              onClick={() => setServiceId(_id)}
               className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white  md:py-2 px-2 py-1 md:px-3 rounded-lg shadow-inner focus:outline-none transition ease-in-out duration-150"
             >
               Details
@@ -41,4 +45,4 @@ const ProductCard: React.FC<TService> = ({
   );
 };
 
-export default ProductCard;
+export default ServiceCard;

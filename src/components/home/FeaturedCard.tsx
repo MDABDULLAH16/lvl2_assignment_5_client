@@ -25,11 +25,11 @@ const FeaturedCard: React.FC<TService> = ({
         <div className="flex justify-between items-center space-x-1">
           <span className="text-lg font-semibold text-blue-500">${price}</span>
           <span className="bg-gray-200 text-gray-800 text-sm px-3 py-1 rounded-lg">
-            time: {duration}
+            Time: {duration}
           </span>
           <div className="card-actions">
             <Link
-              to={`/product-details/${_id}`}
+              to={`/service-details/${_id}`}
               className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white  md:py-2 px-2 py-1 md:px-3 rounded-lg shadow-inner focus:outline-none transition ease-in-out duration-150"
             >
               Details

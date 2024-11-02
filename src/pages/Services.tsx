@@ -2,10 +2,12 @@ import { useState, useMemo } from "react";
 
 import { useGetAllServicesQuery } from "@/redux/api/baseApi";
 import { TService } from "@/types/TServices";
-import ProductCard from "@/components/ProductCard";
+import ServiceCard from "@/components/ServiceCard";
 
 const Services = () => {
   const { data: servicesData, isLoading, isError } = useGetAllServicesQuery({});
+  // console.log("data", servicesData.data);
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("");
 
@@ -99,7 +101,7 @@ const Services = () => {
             key={service._id}
             className="transform transition-transform duration-300 hover:scale-105"
           >
-            <ProductCard key={service._id} {...service} />
+            <ServiceCard key={service._id} {...service} />
           </div>
         ))}
       </div>

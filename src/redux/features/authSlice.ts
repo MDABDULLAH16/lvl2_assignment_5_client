@@ -1,15 +1,18 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+// authSlice.ts
+import { createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../store";
 
-interface UserState {
-  user: {
-    email: string;
-    name: string;
-    // Add more fields as per your user data structure
-  } | null;
+interface User {
+  email: string;
+  name: string;
+}
+
+interface AuthState {
+  user: User | null;
   token: string | null;
 }
 
-const initialState: UserState = {
+const initialState: AuthState = {
   user: null,
   token: null,
 };
@@ -18,12 +21,10 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setUser: (
-      state,
-      action: PayloadAction<{ user: UserState["user"]; token: string }>
-    ) => {
-      state.user = action.payload.user;
-      state.token = action.payload.token;
+    setUser: (state, action) => {
+      const { user, token } = action.payload;
+      state.user = user;
+      state.token = token;
     },
     clearUser: (state) => {
       state.user = null;
@@ -32,5 +33,12 @@ const authSlice = createSlice({
   },
 });
 
+// Export actions
 export const { setUser, clearUser } = authSlice.actions;
+
+// Export the reducer
 export default authSlice.reducer;
+
+// Selectors for accessing parts of the state
+export const selectCurrentUser = (state: RootState) => state.auth.user;
+export const selectCurrentToken = (state: RootState) => state.auth.token;

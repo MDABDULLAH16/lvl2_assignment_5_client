@@ -1,116 +1,97 @@
-import { useLoginUserMutation } from "@/redux/api/baseApi";
-import { setUser } from "@/redux/features/authSlice";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
+import { useLoginUserMutation } from "@/redux/api/baseApi";
+import { verifyToken } from "@/utils/verefyToken";
+import { useAppDispatch } from "@/redux/hooks"; // Import useAppSelector
+import { setUser } from "@/redux/features/authSlice"; // Import slice actions and selectors
+import { setUserDetails } from "@/redux/features/userDetailsSlice";
+
+interface LoginFormInputs {
+  email: string;
+  password: string;
+}
 
 const Login: React.FC = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormInputs>();
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Initialize dispatch
-
+  const dispatch = useAppDispatch();
   const [showModal, setShowModal] = useState(false);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const [loginUser, { data, error, isLoading, isSuccess }] =
     useLoginUserMutation();
-  console.log("user", data?.data?.userInfo);
+  dispatch(setUserDetails({ userDetails: data?.data?.userInfo }));
 
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
-    if (!formData.email) newErrors.email = "Email is required.";
-    if (!formData.password) newErrors.password = "Password is required.";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  // Handle form submit
+  const onSubmit = async (formData: LoginFormInputs) => {
+    const res = await loginUser(formData).unwrap();
+    const user = verifyToken(res?.data?.accessToken);
+    dispatch(setUser({ user: user, token: res?.data?.accessToken }));
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (validateForm()) {
-      loginUser({ email: formData.email, password: formData.password });
-    }
-  };
-
+  // Success effect to show modal and navigate
   useEffect(() => {
     if (isSuccess && data) {
-      // Dispatch the setUser action to store the user data in Redux
-      dispatch(
-        setUser({
-          user: data?.data?.userInfo, // Assuming the user data is in the response
-          token: data.token, // Assuming the token is in the response
-        })
-      );
-
       setShowModal(true);
       const timer = setTimeout(() => {
         setShowModal(false);
-        navigate("/"); // Redirect to home page
+        navigate("/"); // Redirect to home page after successful login
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [isSuccess, data, dispatch, navigate]);
+  }, [isSuccess, data, navigate]);
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Email
             </label>
             <input
               type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
+              {...register("email", { required: "Email is required." })}
               className={`mt-1 block w-full border ${
                 errors.email ? "border-red-500" : "border-gray-300"
               } rounded-lg p-2`}
-              required
               aria-invalid={errors.email ? "true" : "false"}
             />
             {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email}</p>
+              <p className="text-red-500 text-sm">{errors.email.message}</p>
             )}
           </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Password
             </label>
             <input
               type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
+              {...register("password", { required: "Password is required." })}
               className={`mt-1 block w-full border ${
                 errors.password ? "border-red-500" : "border-gray-300"
               } rounded-lg p-2`}
-              required
               aria-invalid={errors.password ? "true" : "false"}
             />
             {errors.password && (
-              <p className="text-red-500 text-sm">{errors.password}</p>
+              <p className="text-red-500 text-sm">{errors.password.message}</p>
             )}
           </div>
+
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {isLoading ? "Logging in..." : "Login"}
           </button>
+
           <div className="flex justify-between items-center mt-4">
             <Link
               to="/forgot-password"
