@@ -26,12 +26,8 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/booking",
-        element: (
-          <ProtectedRoute>
-            <Booking></Booking>
-          </ProtectedRoute>
-        ),
+        path: "/booking/:_id",
+        element: <Booking></Booking>,
       },
       {
         path: "/service-details/:_id",

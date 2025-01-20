@@ -1,27 +1,43 @@
 // src/pages/Booking.tsx
 
+import { useGetSingleServiceQuery } from "@/redux/api/baseApi";
 import { clearBooking } from "@/redux/features/bookingSlice";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { RootState } from "@/redux/store";
+import { TService } from "@/types/TServices";
 
-import React from "react";
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 
 const Booking: React.FC = () => {
+  const { _id } = useParams<{ _id: string }>();
   const dispatch = useAppDispatch();
+  const [isProcessing, setIsProcessing] = useState(false); // To handle payment loading state
   const user = useAppSelector(
     (state: RootState) => state.userDetails.userDetails
   );
-  const selectedService = useAppSelector(
-    (state: RootState) => state.booking.selectedService
-  );
+  // const selectedService = useAppSelector(
+  //   (state: RootState) => state.booking.selectedService
+  // );
+  const { data: services } = useGetSingleServiceQuery(_id!);
+  const selectedService: TService | undefined = services?.data;
+  console.log("selected services on booking");
+
   const selectedSlot = useAppSelector(
     (state: RootState) => state.booking.selectedSlot
   );
 
   const handlePayment = () => {
-    // Implement payment processing logic here
+    if (!selectedService || !selectedSlot) return;
+    setIsProcessing(true);
     console.log("Processing payment...");
-    dispatch(clearBooking());
+
+    // Simulate a payment process
+    setTimeout(() => {
+      setIsProcessing(false);
+      alert("Payment successful!");
+      dispatch(clearBooking());
+    }, 2000);
   };
 
   return (
@@ -32,24 +48,38 @@ const Booking: React.FC = () => {
           Service Summary
         </h2>
         <div className="bg-gray-50 p-4 rounded-lg shadow-sm mb-6">
-          <h3 className="text-xl font-bold text-gray-800">
-            {selectedService?.name}
-          </h3>
-          <p className="text-gray-600 mb-2">Price: ${selectedService?.price}</p>
-          <p className="text-gray-600 mb-2">
-            Duration: {selectedService?.duration} minutes
-          </p>
-          <p className="text-gray-600">
-            Description: {selectedService?.description}
-          </p>
+          {selectedService ? (
+            <>
+              <h3 className="text-xl font-bold text-gray-800">
+                {selectedService.name}
+              </h3>
+              <p className="text-gray-600 mb-2">
+                Price: ${selectedService.price}
+              </p>
+              <p className="text-gray-600 mb-2">
+                Duration: {selectedService.duration} minutes
+              </p>
+              <p className="text-gray-600">
+                Description: {selectedService.description}
+              </p>
+            </>
+          ) : (
+            <p className="text-red-500">No service selected.</p>
+          )}
         </div>
 
         <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
           <h3 className="text-lg font-semibold text-gray-700">Selected Slot</h3>
-          <p className="text-gray-600 mt-2">Date: {selectedSlot?.date}</p>
-          <p className="text-gray-600">
-            Time: {selectedSlot?.startTime} - {selectedSlot?.endTime}
-          </p>
+          {selectedSlot ? (
+            <>
+              <p className="text-gray-600 mt-2">Date: {selectedSlot.date}</p>
+              <p className="text-gray-600">
+                Time: {selectedSlot.startTime} - {selectedSlot.endTime}
+              </p>
+            </>
+          ) : (
+            <p className="text-red-500">No slot selected.</p>
+          )}
         </div>
       </div>
 
@@ -66,7 +96,7 @@ const Booking: React.FC = () => {
             </label>
             <input
               type="text"
-              value={user?.name || ""}
+              value={user?.name || "Guest"}
               readOnly
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -79,7 +109,7 @@ const Booking: React.FC = () => {
             </label>
             <input
               type="email"
-              value={user?.email || ""}
+              value={user?.email || "Not provided"}
               readOnly
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -92,7 +122,11 @@ const Booking: React.FC = () => {
             </label>
             <input
               type="text"
-              value={`${selectedSlot?.date} ${selectedSlot?.startTime} - ${selectedSlot?.endTime}`}
+              value={
+                selectedSlot
+                  ? ` ${selectedSlot.startTime} `
+                  : "No time selected"
+              }
               readOnly
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -101,11 +135,15 @@ const Booking: React.FC = () => {
           {/* Pay Now Button */}
           <button
             type="button"
-            className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-md"
+            className={`w-full mt-4 ${
+              isProcessing
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600"
+            } text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-md`}
             onClick={handlePayment}
-            disabled={!selectedService || !selectedSlot}
+            disabled={!selectedService || !selectedSlot || isProcessing}
           >
-            Pay Now
+            {isProcessing ? "Processing..." : "Pay Now"}
           </button>
         </form>
       </div>

@@ -6,6 +6,8 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+import { useDispatch } from "react-redux";
+import { setSlot } from "@/redux/features/bookingSlice";
 
 interface Slot {
   _id: string;
@@ -21,10 +23,24 @@ interface SlotsProps {
 
 const Slots: React.FC<SlotsProps> = ({ slotData, onSelectSlot }) => {
   const [selectedSlot, setSelectedSlot] = useState<string>("");
+  const dispatch = useDispatch();
 
   const handleSelect = (slotId: string) => {
     setSelectedSlot(slotId);
-    onSelectSlot(slotId); // Pass selected slot to parent
+    onSelectSlot(slotId);
+
+    // Find the selected slot from slotData
+    const selectedSlotData = slotData.find((slot) => slot._id === slotId);
+
+    if (selectedSlotData) {
+      dispatch(
+        setSlot({
+          date: selectedSlotData.date,
+          startTime: selectedSlotData.startTime,
+          endTime: selectedSlotData.endTime,
+        })
+      );
+    }
   };
 
   return (
