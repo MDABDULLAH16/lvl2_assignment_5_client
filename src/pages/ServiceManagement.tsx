@@ -3,14 +3,14 @@ import {
   useAddServiceMutation,
   useDeleteServiceMutation,
   useGetAllServicesQuery,
-  useUpdateServiceMutation,
 } from "@/redux/api/baseApi";
 import { TService } from "@/types/TServices";
+import UpdateService from "./UpdateService"; // Import the UpdateService component
+import { Link } from "react-router-dom";
 
 const ServiceManagement: React.FC = () => {
   const { data: servicesData, isLoading, isError } = useGetAllServicesQuery({});
   const [addService, { isLoading: isAdding }] = useAddServiceMutation();
-  const [updateService, { isLoading: isUpdating }] = useUpdateServiceMutation();
   const [deleteService, { isLoading: isDeleting }] = useDeleteServiceMutation();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,20 +24,6 @@ const ServiceManagement: React.FC = () => {
     } catch (error) {
       console.error("Error adding service:", error);
       alert("Failed to add service.");
-    }
-  };
-
-  const handleUpdateService = async (updatedService: TService) => {
-    try {
-      await updateService({
-        id: updatedService._id,
-        ...updatedService,
-      }).unwrap();
-      setSelectedService(null);
-      alert("Service updated successfully!");
-    } catch (error) {
-      console.error("Error updating service:", error);
-      alert("Failed to update service.");
     }
   };
 
@@ -96,7 +82,7 @@ const ServiceManagement: React.FC = () => {
                 ${service.price}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                <button
+                {/* <button
                   onClick={() => {
                     setSelectedService(service);
                     setIsModalOpen(true); // Open modal for updating service
@@ -104,9 +90,15 @@ const ServiceManagement: React.FC = () => {
                   className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded"
                 >
                   Update
-                </button>
+                </button> */}
+                <Link
+                  to={`/update-service/${service._id}`}
+                  className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded"
+                >
+                  Update
+                </Link>
                 <button
-                  onClick={() => handleDeleteService(service._id)}
+                  onClick={() => handleDeleteService(service._id as string)}
                   className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded ml-2"
                 >
                   Delete
@@ -118,18 +110,22 @@ const ServiceManagement: React.FC = () => {
       </table>
 
       {/* Add/Update Service Modal */}
-      {isModalOpen && (
+      {isModalOpen && selectedService && (
+        <UpdateService
+          service={selectedService}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
+
+      {/* Add Service Modal */}
+      {isModalOpen && !selectedService && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white rounded-lg p-6 w-96">
-            <h3 className="text-lg font-semibold mb-4">
-              {selectedService ? "Update Service" : "Add Service"}
-            </h3>
+            <h3 className="text-lg font-semibold mb-4">Add Service</h3>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target as HTMLFormElement);
-
-                // Convert formData to object and ensure data types
                 const serviceData = Object.fromEntries(
                   formData.entries()
                 ) as unknown as TService;
@@ -137,17 +133,10 @@ const ServiceManagement: React.FC = () => {
                 serviceData.duration = Number(serviceData.duration);
 
                 console.log("Collected Service Data:", serviceData);
-
-                if (selectedService) {
-                  handleUpdateService({
-                    _id: selectedService._id,
-                    ...serviceData,
-                  });
-                } else {
-                  handleAddService(serviceData);
-                }
+                handleAddService(serviceData);
               }}
             >
+              {/* Form Fields */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   Name
@@ -155,7 +144,6 @@ const ServiceManagement: React.FC = () => {
                 <input
                   type="text"
                   name="name"
-                  defaultValue={selectedService?.name || ""}
                   required
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
                 />
@@ -166,7 +154,6 @@ const ServiceManagement: React.FC = () => {
                 </label>
                 <textarea
                   name="description"
-                  defaultValue={selectedService?.description || ""}
                   required
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
                 />
@@ -178,7 +165,6 @@ const ServiceManagement: React.FC = () => {
                 <input
                   type="number"
                   name="price"
-                  defaultValue={selectedService?.price || ""}
                   required
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
                 />
@@ -190,7 +176,6 @@ const ServiceManagement: React.FC = () => {
                 <input
                   type="number"
                   name="duration"
-                  defaultValue={selectedService?.duration || ""}
                   required
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
                 />
@@ -202,7 +187,6 @@ const ServiceManagement: React.FC = () => {
                 <input
                   type="text"
                   name="image"
-                  defaultValue={selectedService?.image || ""}
                   required
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
                 />
@@ -218,9 +202,9 @@ const ServiceManagement: React.FC = () => {
                 <button
                   type="submit"
                   className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded"
-                  disabled={isAdding || isUpdating}
+                  disabled={isAdding}
                 >
-                  {isAdding || isUpdating ? "Saving..." : "Save"}
+                  {isAdding ? "Saving..." : "Save"}
                 </button>
               </div>
             </form>

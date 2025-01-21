@@ -3,6 +3,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./features/authSlice";
 import userDetailsReducer from "./features/userDetailsSlice";
 import bookingReducer from "./features/bookingSlice";
+import serviceReducer from "./features/serviceSlice";
 import { baseApi } from "./api/baseApi";
 import {
   FLUSH,
@@ -27,6 +28,7 @@ export const store = configureStore({
     auth: persistedReducer,
     userDetails: userDetailsReducer,
     booking: bookingReducer,
+    services: serviceReducer,
     [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
