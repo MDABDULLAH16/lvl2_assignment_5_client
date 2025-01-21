@@ -10,7 +10,6 @@ import { useDispatch } from "react-redux";
 import { setSlot } from "@/redux/features/bookingSlice";
 
 interface Slot {
-  _id: string;
   date: string;
   startTime: string;
   endTime: string;

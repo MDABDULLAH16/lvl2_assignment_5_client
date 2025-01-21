@@ -1,6 +1,7 @@
-// src/pages/Booking.tsx
-
-import { useGetSingleServiceQuery } from "@/redux/api/baseApi";
+import {
+  useGetSingleServiceQuery,
+  useCreateBookingMutation,
+} from "@/redux/api/baseApi";
 import { clearBooking } from "@/redux/features/bookingSlice";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { RootState } from "@/redux/store";
@@ -16,28 +17,41 @@ const Booking: React.FC = () => {
   const user = useAppSelector(
     (state: RootState) => state.userDetails.userDetails
   );
-  // const selectedService = useAppSelector(
-  //   (state: RootState) => state.booking.selectedService
-  // );
   const { data: services } = useGetSingleServiceQuery(_id!);
+  const [createBooking] = useCreateBookingMutation();
   const selectedService: TService | undefined = services?.data;
-  console.log("selected services on booking");
 
   const selectedSlot = useAppSelector(
     (state: RootState) => state.booking.selectedSlot
   );
 
-  const handlePayment = () => {
-    if (!selectedService || !selectedSlot) return;
-    setIsProcessing(true);
-    console.log("Processing payment...");
+  const handlePayment = async () => {
+    if (!selectedService || !selectedSlot) {
+      alert("Please select a service and a slot!");
+      return;
+    }
 
-    // Simulate a payment process
-    setTimeout(() => {
-      setIsProcessing(false);
-      alert("Payment successful!");
+    setIsProcessing(true);
+
+    try {
+      const bookingData = {
+        customer: user?.id || "guest",
+        serviceId: selectedService._id,
+        slotId: selectedSlot.id,
+      };
+
+      const response = await createBooking(bookingData).unwrap();
+      console.log("Booking successful:", response);
+
+      // Clear booking data after successful payment
       dispatch(clearBooking());
-    }, 2000);
+      alert("Payment successful!");
+    } catch (error) {
+      console.error("Booking failed:", error);
+      alert("An error occurred while booking. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -124,7 +138,7 @@ const Booking: React.FC = () => {
               type="text"
               value={
                 selectedSlot
-                  ? ` ${selectedSlot.startTime} `
+                  ? `${selectedSlot.date} ${selectedSlot.startTime} - ${selectedSlot.endTime}`
                   : "No time selected"
               }
               readOnly
@@ -136,12 +150,12 @@ const Booking: React.FC = () => {
           <button
             type="button"
             className={`w-full mt-4 ${
-              isProcessing
+              isProcessing || !selectedService || !selectedSlot
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-blue-500 hover:bg-blue-600"
             } text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-md`}
             onClick={handlePayment}
-            disabled={!selectedService || !selectedSlot || isProcessing}
+            disabled={isProcessing || !selectedService || !selectedSlot}
           >
             {isProcessing ? "Processing..." : "Pay Now"}
           </button>

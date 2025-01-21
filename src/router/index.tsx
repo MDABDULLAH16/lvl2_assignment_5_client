@@ -7,6 +7,8 @@ import Services from "@/pages/Services";
 import ProtectedRoute from "./ProtectedRoute";
 import ServiceDetails from "@/pages/ServiceDetails";
 import Booking from "@/pages/Booking";
+import AdminPanel from "@/pages/AdminPanel";
+// import AdminPanel from "@/pages/AdminPanel";
 
 export const router = createBrowserRouter([
   {
@@ -37,6 +39,7 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      { path: "/admin-panel", element: <AdminPanel></AdminPanel> },
       { path: "/login", element: <Login></Login> },
       { path: "/register", element: <Register></Register> },
     ],

@@ -12,9 +12,12 @@ interface BookingState {
     image?: string;
   };
   selectedSlot?: {
+    id: string;
+    serviceId: string;
     date: string;
     startTime: string;
     endTime: string;
+    isBooked: string;
   };
 }
 
