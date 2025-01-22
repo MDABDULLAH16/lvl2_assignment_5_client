@@ -9,6 +9,8 @@ import ServiceDetails from "@/pages/ServiceDetails";
 import Booking from "@/pages/Booking";
 import AdminPanel from "@/pages/AdminPanel";
 import UpdateService from "@/pages/UpdateService";
+import CreateSlot from "@/pages/CreateSlot";
+
 // import AdminPanel from "@/pages/AdminPanel";
 
 export const router = createBrowserRouter([
@@ -41,6 +43,8 @@ export const router = createBrowserRouter([
         ),
       },
       { path: "/admin-panel", element: <AdminPanel></AdminPanel> },
+      // { path: "/admin-services", element: <ServiceManagement></ServiceManagement> },
+      { path: "/create-slot", element: <CreateSlot></CreateSlot> },
       {
         path: "/update-service/:_id",
         element: <UpdateService></UpdateService>,

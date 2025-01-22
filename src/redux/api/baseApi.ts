@@ -16,6 +16,7 @@ export const baseApi = createApi({
     },
   }),
   endpoints: (builder) => ({
+    // Existing service endpoints
     getAllServices: builder.query({
       query: () => ({
         url: "/services",
@@ -64,12 +65,69 @@ export const baseApi = createApi({
         method: "DELETE",
       }),
     }),
+
+    // Slot management endpoints
+    getAllSlot: builder.query({
+      query: () => ({
+        url: "/slots",
+        method: "GET",
+      }),
+    }),
     getSlot: builder.query({
       query: (_id) => ({
         url: `/slots/${_id}`,
         method: "GET",
       }),
     }),
+
+    // Toggle slot status (AVAILABLE / CANCELLED)
+    updateSlotStatus: builder.mutation({
+      query: ({
+        slotId,
+        status,
+      }: {
+        slotId: string;
+        status: "AVAILABLE" | "CANCELLED";
+      }) => ({
+        url: `/slots/${slotId}/status`,
+        method: "PATCH", // Use PATCH for partial updates
+        body: { status },
+      }),
+    }),
+
+    // Create a new slot
+    createSlot: builder.mutation({
+      query: (slotData: {
+        service: string;
+        date: string;
+        startTime: string;
+        endTime: string;
+      }) => ({
+        url: "/slots",
+        method: "POST",
+        body: slotData,
+      }),
+    }),
+    // Update an existing slot
+    updateSlot: builder.mutation({
+      query: ({
+        slotId,
+        slotData,
+      }: {
+        slotId: string;
+        slotData: {
+          date?: string;
+          startTime?: string;
+          endTime?: string;
+          status?: "AVAILABLE" | "CANCELLED";
+        };
+      }) => ({
+        url: `/slots/${slotId}`,
+        method: "PUT", // Use PUT for full updates; switch to PATCH for partial updates
+        body: slotData,
+      }),
+    }),
+    // Authentication endpoints
     loginUser: builder.mutation({
       query: (userInfo) => ({
         url: "/auth/login",
@@ -90,6 +148,8 @@ export const baseApi = createApi({
         body: userData,
       }),
     }),
+
+    // Booking endpoint
     createBooking: builder.mutation({
       query: (bookingData: {
         customer: string;
@@ -114,10 +174,14 @@ export const baseApi = createApi({
 export const {
   useGetAllServicesQuery,
   useGetSingleServiceQuery,
-  useAddServiceMutation, // Export addService hook
-  useUpdateServiceMutation, // Export updateService hook
-  useDeleteServiceMutation, // Export deleteService hook
+  useAddServiceMutation,
+  useUpdateServiceMutation,
+  useDeleteServiceMutation,
+  useGetAllSlotQuery,
   useGetSlotQuery,
+  useUpdateSlotStatusMutation, // New hook for updating slot status
+  useCreateSlotMutation, // New hook for creating a new slot
+  useUpdateSlotMutation,
   useLoginUserMutation,
   useSignUpMutation,
   useCreateBookingMutation,
