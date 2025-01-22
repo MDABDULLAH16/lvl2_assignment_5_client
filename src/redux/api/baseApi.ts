@@ -108,23 +108,11 @@ export const baseApi = createApi({
         body: slotData,
       }),
     }),
-    // Update an existing slot
     updateSlot: builder.mutation({
-      query: ({
-        slotId,
-        slotData,
-      }: {
-        slotId: string;
-        slotData: {
-          date?: string;
-          startTime?: string;
-          endTime?: string;
-          status?: "AVAILABLE" | "CANCELLED";
-        };
-      }) => ({
-        url: `/slots/${slotId}`,
-        method: "PUT", // Use PUT for full updates; switch to PATCH for partial updates
-        body: slotData,
+      query: ({ id, data }) => ({
+        url: `/slots/${id}`,
+        method: "PUT",
+        body: data,
       }),
     }),
     // Authentication endpoints

@@ -29,7 +29,7 @@ const SlotManagement: React.FC = () => {
 
   const getServiceName = (serviceId: string) => {
     const service = servicesData?.data?.find((s: any) => s._id === serviceId);
-    return service ? service.name : "Unknown Service";
+    return service ? service.name : "Bangla Service😎";
   };
 
   const openModal = (slot: SlotData) => {
@@ -44,16 +44,35 @@ const SlotManagement: React.FC = () => {
 
   const handleUpdateSlot = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (selectedSlot) {
-      await updateSlot(selectedSlot);
-      alert("Slot updated successfully!");
-      closeModal();
+      try {
+        // Adjust the payload to match your API's expected format
+        const payload = {
+          id: selectedSlot._id,
+          data: {
+            date: selectedSlot.date,
+            startTime: selectedSlot.startTime,
+            endTime: selectedSlot.endTime,
+            isBooked: selectedSlot.isBooked,
+          },
+        };
+
+        await updateSlot(payload).unwrap(); // Use `.unwrap()` for better error handling with RTK Query
+        alert("Slot updated successfully!");
+        closeModal();
+      } catch (error) {
+        console.error("Error updating slot:", error);
+        alert("Failed to update slot. Please try again.");
+      }
     }
   };
 
   return (
     <div className="p-5">
-      <h1 className="text-2xl font-bold mb-4">Slot Management</h1>
+      <h1 className="text-2xl font-bold mb-4">
+        Slot Management: {slotsData?.data.length}
+      </h1>
       <div className="mt-5">
         <button
           onClick={() => navigate("/create-slot")}
