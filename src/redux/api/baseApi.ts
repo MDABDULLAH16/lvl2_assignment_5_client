@@ -73,6 +73,7 @@ export const baseApi = createApi({
         method: "GET",
       }),
     }),
+
     getSlot: builder.query({
       query: (_id) => ({
         url: `/slots/${_id}`,
@@ -115,6 +116,7 @@ export const baseApi = createApi({
         body: data,
       }),
     }),
+
     // Authentication endpoints
     loginUser: builder.mutation({
       query: (userInfo) => ({
@@ -136,7 +138,19 @@ export const baseApi = createApi({
         body: userData,
       }),
     }),
-
+    getAllUser: builder.query({
+      query: () => ({
+        url: "/auth",
+        method: "GET",
+      }),
+    }),
+    updateUser: builder.mutation({
+      query: ({ _id, data }) => ({
+        url: `/auth/${_id}`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
     // Booking endpoint
     createBooking: builder.mutation({
       query: (bookingData: {
@@ -172,5 +186,7 @@ export const {
   useUpdateSlotMutation,
   useLoginUserMutation,
   useSignUpMutation,
+  useUpdateUserMutation,
+  useGetAllUserQuery,
   useCreateBookingMutation,
 } = baseApi;
