@@ -59,8 +59,8 @@ export const baseApi = createApi({
       }),
     }),
     deleteService: builder.mutation({
-      query: (id: string) => ({
-        url: `/services/${id}`,
+      query: (_id: string) => ({
+        url: `/services/${_id}`,
         method: "DELETE",
       }),
     }),

@@ -7,15 +7,23 @@ import {
 import { TService } from "@/types/TServices";
 import UpdateService from "./UpdateService"; // Import the UpdateService component
 import { Link } from "react-router-dom";
+// import { useAppDispatch } from "@/redux/hooks";
 
 const ServiceManagement: React.FC = () => {
-  const { data: servicesData, isLoading, isError } = useGetAllServicesQuery({});
+  const {
+    data: servicesData,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetAllServicesQuery({});
+  // Filter services to only show those with isDeleted: false
+
   const [addService, { isLoading: isAdding }] = useAddServiceMutation();
-  const [deleteService, { isLoading: isDeleting }] = useDeleteServiceMutation();
+  const [deleteService] = useDeleteServiceMutation(undefined);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<TService | null>(null);
-
+  // const dispatch = useAppDispatch();
   const handleAddService = async (newService: TService) => {
     try {
       await addService(newService).unwrap();
@@ -31,8 +39,9 @@ const ServiceManagement: React.FC = () => {
     if (!window.confirm("Are you sure you want to delete this service?"))
       return;
     try {
-      await deleteService(serviceId).unwrap();
+      await deleteService(serviceId).unwrap(); // Corrected the function call
       alert("Service deleted successfully!");
+      refetch(); // Refetch the services to update the list
     } catch (error) {
       console.error("Error deleting service:", error);
       alert("Failed to delete service.");
@@ -82,15 +91,6 @@ const ServiceManagement: React.FC = () => {
                 ${service.price}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {/* <button
-                  onClick={() => {
-                    setSelectedService(service);
-                    setIsModalOpen(true); // Open modal for updating service
-                  }}
-                  className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded"
-                >
-                  Update
-                </button> */}
                 <Link
                   to={`/update-service/${service._id}`}
                   className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded"

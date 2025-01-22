@@ -9,8 +9,7 @@ import {
 import { useAppDispatch } from "@/redux/hooks";
 
 import React, { useEffect, useState } from "react";
-
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const ServiceUpdate: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -24,6 +23,7 @@ const ServiceUpdate: React.FC = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { _id } = useParams<{ _id: string }>();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate(); // Use navigate hook
 
   // Fetch single service data
   const {
@@ -87,19 +87,24 @@ const ServiceUpdate: React.FC = () => {
   useEffect(() => {
     if (isSuccess) {
       setShowSuccessModal(true);
-      refetch();
+      setTimeout(() => {
+        // Redirect to serviceManagement page after 2 seconds
+        navigate("/admin-panel");
+        refetch(); // Optionally refetch data if needed
+      }, 2000);
     }
-  }, [isSuccess, refetch]);
+  }, [isSuccess, refetch, navigate]);
 
   // Close modal after a few seconds
   useEffect(() => {
     if (showSuccessModal) {
       const timer = setTimeout(() => {
         setShowSuccessModal(false);
+        refetch(); // Optionally refetch data if needed
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [showSuccessModal]);
+  }, [showSuccessModal, refetch]);
 
   if (isLoading || isUpdating) {
     return (
@@ -216,12 +221,38 @@ const ServiceUpdate: React.FC = () => {
 
       {/* Success Modal */}
       {showSuccessModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-md transform transition-all duration-500 ease-in-out scale-0 opacity-0 animate-scale-up-fade-in">
-            <h2 className="text-2xl font-semibold text-green-600">Success!</h2>
-            <p className="text-gray-700 mt-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="relative bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center transform transition-transform scale-95 animate-fade-in">
+            <div className="flex justify-center mb-4">
+              <div className="bg-green-100 text-green-500 rounded-full p-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="w-12 h-12"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-green-600">
+              Service Updated!
+            </h2>
+            <p className="mt-4 text-gray-600">
               Your service has been updated successfully.
             </p>
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="mt-6 bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
