@@ -5,43 +5,46 @@ import {
   useGetAllServicesQuery,
 } from "@/redux/api/baseApi";
 import { TService } from "@/types/TServices";
-import UpdateService from "./UpdateService"; // Import the UpdateService component
+import AddService from "./addServices";
+import DeleteConfirmationModal from "@/components/ui/deletedModal";
+import SuccessModal from "@/components/ui/successModal";
 import { Link } from "react-router-dom";
-// import { useAppDispatch } from "@/redux/hooks";
 
 const ServiceManagement: React.FC = () => {
   const {
     data: servicesData,
     isLoading,
     isError,
-    refetch,
-  } = useGetAllServicesQuery({});
-  // Filter services to only show those with isDeleted: false
+    refetch, // Refetch method for manually fetching the updated data
+  } = useGetAllServicesQuery({}, { refetchOnMountOrArgChange: false });
 
   const [addService, { isLoading: isAdding }] = useAddServiceMutation();
   const [deleteService] = useDeleteServiceMutation(undefined);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<TService | null>(null);
-  // const dispatch = useAppDispatch();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [deleteServiceId, setDeleteServiceId] = useState<string | null>(null);
+
   const handleAddService = async (newService: TService) => {
     try {
       await addService(newService).unwrap();
-      setIsModalOpen(false);
-      alert("Service added successfully!");
+      setIsSuccessModalOpen(true);
+      setIsAddModalOpen(false);
+      refetch(); // Refetch the data after adding a new service
     } catch (error) {
       console.error("Error adding service:", error);
       alert("Failed to add service.");
     }
   };
 
-  const handleDeleteService = async (serviceId: string) => {
-    if (!window.confirm("Are you sure you want to delete this service?"))
-      return;
+  const handleDeleteService = async () => {
+    if (!deleteServiceId) return;
     try {
-      await deleteService(serviceId).unwrap(); // Corrected the function call
-      alert("Service deleted successfully!");
-      refetch(); // Refetch the services to update the list
+      await deleteService(deleteServiceId).unwrap();
+      setIsDeleteModalOpen(false);
+      setIsSuccessModalOpen(true);
+      refetch(); // Refetch the data after deleting a service
     } catch (error) {
       console.error("Error deleting service:", error);
       alert("Failed to delete service.");
@@ -58,17 +61,13 @@ const ServiceManagement: React.FC = () => {
           Service Management
         </h2>
         <button
-          onClick={() => {
-            setIsModalOpen(true);
-            setSelectedService(null); // Open modal for adding service
-          }}
+          onClick={() => setIsAddModalOpen(true)}
           className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded"
         >
           Add Service
         </button>
       </div>
 
-      {/* Service Table */}
       <table className="min-w-full border-collapse border border-gray-300">
         <thead>
           <tr>
@@ -98,7 +97,10 @@ const ServiceManagement: React.FC = () => {
                   Update
                 </Link>
                 <button
-                  onClick={() => handleDeleteService(service._id as string)}
+                  onClick={() => {
+                    setDeleteServiceId(service._id as string);
+                    setIsDeleteModalOpen(true);
+                  }}
                   className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded ml-2"
                 >
                   Delete
@@ -109,107 +111,27 @@ const ServiceManagement: React.FC = () => {
         </tbody>
       </table>
 
-      {/* Add/Update Service Modal */}
-      {isModalOpen && selectedService && (
-        <UpdateService
-          service={selectedService}
-          onClose={() => setIsModalOpen(false)}
+      {isAddModalOpen && (
+        <AddService
+          onClose={() => setIsAddModalOpen(false)}
+          onAddService={handleAddService}
+          isAdding={isAdding}
         />
       )}
 
-      {/* Add Service Modal */}
-      {isModalOpen && !selectedService && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 w-96">
-            <h3 className="text-lg font-semibold mb-4">Add Service</h3>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target as HTMLFormElement);
-                const serviceData = Object.fromEntries(
-                  formData.entries()
-                ) as unknown as TService;
-                serviceData.price = Number(serviceData.price);
-                serviceData.duration = Number(serviceData.duration);
+      {isDeleteModalOpen && (
+        <DeleteConfirmationModal
+          message="Are you sure you want to delete this service?"
+          onConfirm={handleDeleteService}
+          onCancel={() => setIsDeleteModalOpen(false)}
+        />
+      )}
 
-                console.log("Collected Service Data:", serviceData);
-                handleAddService(serviceData);
-              }}
-            >
-              {/* Form Fields */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Price
-                </label>
-                <input
-                  type="number"
-                  name="price"
-                  required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Duration
-                </label>
-                <input
-                  type="number"
-                  name="duration"
-                  required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Image
-                </label>
-                <input
-                  type="text"
-                  name="image"
-                  required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-              <div className="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-1 px-4 rounded"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded"
-                  disabled={isAdding}
-                >
-                  {isAdding ? "Saving..." : "Save"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+      {isSuccessModalOpen && (
+        <SuccessModal
+          message="Operation completed successfully!"
+          onClose={() => setIsSuccessModalOpen(false)}
+        />
       )}
     </div>
   );

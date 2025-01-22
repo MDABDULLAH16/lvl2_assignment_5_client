@@ -7,7 +7,6 @@ import {
   setServiceDetails,
 } from "@/redux/features/serviceSlice";
 import { useAppDispatch } from "@/redux/hooks";
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -23,88 +22,60 @@ const ServiceUpdate: React.FC = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { _id } = useParams<{ _id: string }>();
   const dispatch = useAppDispatch();
-  const navigate = useNavigate(); // Use navigate hook
+  const navigate = useNavigate();
 
-  // Fetch single service data
-  const {
-    data: service,
-    isLoading,
-    isError,
-    refetch,
-  } = useGetSingleServiceQuery(_id!);
-  const serviceDetails = service?.data;
-
-  // Define mutation hook for updating the service
+  const { data: service, isLoading, isError } = useGetSingleServiceQuery(_id!);
   const [
     updateService,
     { isLoading: isUpdating, isSuccess, isError: updateError },
   ] = useUpdateServiceMutation();
 
   useEffect(() => {
-    if (serviceDetails) {
+    if (service?.data) {
       setFormData({
-        name: serviceDetails.name,
-        price: serviceDetails.price,
-        description: serviceDetails.description,
-        duration: serviceDetails.duration,
-        image: serviceDetails.image,
+        name: service.data.name,
+        price: service.data.price,
+        description: service.data.description,
+        duration: service.data.duration,
+        image: service.data.image,
       });
-
-      // Store service details in Redux state
-      dispatch(setServiceDetails(serviceDetails));
+      dispatch(setServiceDetails(service.data));
     }
-
-    // Cleanup function to clear service details when component unmounts
     return () => {
       dispatch(clearServiceDetails());
     };
-  }, [serviceDetails, dispatch]);
+  }, [service, dispatch]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const dataToSubmit = {
+    const updatedData = {
       ...formData,
       price: Number(formData.price),
       duration: Number(formData.duration),
     };
-
-    // Call the update mutation with the service ID and updated service data
-    await updateService({ _id: _id!, ...dataToSubmit });
+    try {
+      await updateService({ _id: _id!, ...updatedData }).unwrap();
+    } catch (error) {
+      console.error("Failed to update service:", error);
+    }
   };
 
-  // Open modal when the service update is successful
   useEffect(() => {
     if (isSuccess) {
       setShowSuccessModal(true);
       setTimeout(() => {
-        // Redirect to serviceManagement page after 2 seconds
-        navigate("/admin-panel");
-        refetch(); // Optionally refetch data if needed
-      }, 2000);
-    }
-  }, [isSuccess, refetch, navigate]);
-
-  // Close modal after a few seconds
-  useEffect(() => {
-    if (showSuccessModal) {
-      const timer = setTimeout(() => {
         setShowSuccessModal(false);
-        refetch(); // Optionally refetch data if needed
+        navigate("/admin-panel"); // Redirect after successful update
       }, 2000);
-      return () => clearTimeout(timer);
     }
-  }, [showSuccessModal, refetch]);
+  }, [isSuccess, navigate]);
 
   if (isLoading || isUpdating) {
     return (
@@ -122,7 +93,7 @@ const ServiceUpdate: React.FC = () => {
     );
   }
 
-  if (!serviceDetails) {
+  if (!service?.data) {
     return <div>No service found.</div>;
   }
 
@@ -132,83 +103,24 @@ const ServiceUpdate: React.FC = () => {
         Update Service
       </h1>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6">
-        {/* Service Name */}
-        <div className="relative">
-          <label className="block text-gray-700 font-medium">
-            Service Name
-          </label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Enter service name"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
-            required
-          />
-        </div>
-
-        {/* Price */}
-        <div className="relative">
-          <label className="block text-gray-700 font-medium">Price ($)</label>
-          <input
-            type="number"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            placeholder="Enter service price"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
-            required
-          />
-        </div>
-
-        {/* Description */}
-        <div className="relative">
-          <label className="block text-gray-700 font-medium">Description</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Enter service description"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
-            rows={2}
-            required
-          />
-        </div>
-
-        {/* Duration */}
-        <div className="relative">
-          <label className="block text-gray-700 font-medium">
-            Duration (hrs)
-          </label>
-          <input
-            type="number"
-            name="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            placeholder="Enter service duration"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
-            required
-          />
-        </div>
-
-        {/* Image URL */}
-        <div className="relative">
-          <label className="block text-gray-700 font-medium">
-            Service Image URL
-          </label>
-          <input
-            type="text"
-            name="image"
-            value={formData.image}
-            onChange={handleChange}
-            placeholder="Enter image URL"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
-            required
-          />
-        </div>
-
-        {/* Submit Button */}
+        {["name", "price", "description", "duration", "image"].map((field) => (
+          <div key={field} className="relative">
+            <label className="block text-gray-700 font-medium">
+              {field.charAt(0).toUpperCase() + field.slice(1)}
+            </label>
+            <input
+              type={
+                field === "price" || field === "duration" ? "number" : "text"
+              }
+              name={field}
+              value={formData[field as keyof typeof formData]}
+              onChange={handleChange}
+              placeholder={`Enter service ${field}`}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+              required
+            />
+          </div>
+        ))}
         <div className="text-center">
           <button
             type="submit"
@@ -219,7 +131,6 @@ const ServiceUpdate: React.FC = () => {
         </div>
       </form>
 
-      {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="relative bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center transform transition-transform scale-95 animate-fade-in">
@@ -247,12 +158,6 @@ const ServiceUpdate: React.FC = () => {
             <p className="mt-4 text-gray-600">
               Your service has been updated successfully.
             </p>
-            <button
-              onClick={() => setShowSuccessModal(false)}
-              className="mt-6 bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
-            >
-              Close
-            </button>
           </div>
         </div>
       )}
