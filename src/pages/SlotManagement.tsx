@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import {
   useGetAllServicesQuery,
@@ -21,6 +22,12 @@ const SlotManagement: React.FC = () => {
   const [updateSlot] = useUpdateSlotMutation();
   const [selectedSlot, setSelectedSlot] = useState<SlotData | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [confirmModal, setConfirmModal] = useState({
+    visible: false,
+    message: "",
+    onConfirm: () => {},
+  });
+
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -42,12 +49,9 @@ const SlotManagement: React.FC = () => {
     setModalVisible(false);
   };
 
-  const handleUpdateSlot = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleUpdateSlot = async () => {
     if (selectedSlot) {
       try {
-        // Adjust the payload to match your API's expected format
         const payload = {
           id: selectedSlot._id,
           data: {
@@ -58,12 +62,22 @@ const SlotManagement: React.FC = () => {
           },
         };
 
-        await updateSlot(payload).unwrap(); // Use `.unwrap()` for better error handling with RTK Query
-        alert("Slot updated successfully!");
-        closeModal();
+        await updateSlot(payload).unwrap();
+        setConfirmModal({
+          visible: true,
+          message: "Slot updated successfully!",
+          onConfirm: () => {
+            setConfirmModal({ ...confirmModal, visible: false });
+            closeModal();
+          },
+        });
       } catch (error) {
         console.error("Error updating slot:", error);
-        alert("Failed to update slot. Please try again.");
+        setConfirmModal({
+          visible: true,
+          message: "Failed to update slot. Please try again.",
+          onConfirm: () => setConfirmModal({ ...confirmModal, visible: false }),
+        });
       }
     }
   };
@@ -76,12 +90,12 @@ const SlotManagement: React.FC = () => {
       <div className="mt-5">
         <button
           onClick={() => navigate("/create-slot")}
-          className="bg-green-500 text-white px-4 py-2 rounded"
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
         >
           Create New Slot
         </button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
         {slotsData?.data?.map((slot: SlotData) => (
           <div
             key={slot._id}
@@ -108,7 +122,7 @@ const SlotManagement: React.FC = () => {
               className={`mt-4 px-4 py-2 text-white rounded ${
                 slot.isBooked === "booked"
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-500"
+                  : "bg-blue-500 hover:bg-blue-600 transition"
               }`}
             >
               Update Slot
@@ -121,7 +135,13 @@ const SlotManagement: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-lg w-96">
             <h2 className="text-xl font-bold mb-4">Update Slot</h2>
-            <form onSubmit={handleUpdateSlot} className="space-y-4">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleUpdateSlot();
+              }}
+              className="space-y-4"
+            >
               <div>
                 <label className="block font-medium">Date:</label>
                 <input
@@ -180,18 +200,33 @@ const SlotManagement: React.FC = () => {
               </div>
               <button
                 type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded w-full"
+                className="bg-blue-500 text-white px-4 py-2 rounded w-full hover:bg-blue-600 transition"
               >
                 Save Changes
               </button>
               <button
                 type="button"
                 onClick={closeModal}
-                className="mt-2 bg-gray-300 px-4 py-2 rounded w-full"
+                className="mt-2 bg-gray-300 px-4 py-2 rounded w-full hover:bg-gray-400 transition"
               >
                 Cancel
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {confirmModal.visible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg w-96">
+            <h2 className="text-xl font-bold mb-4">Confirmation</h2>
+            <p className="mb-4">{confirmModal.message}</p>
+            <button
+              onClick={confirmModal.onConfirm}
+              className="bg-green-500 text-white px-4 py-2 rounded w-full hover:bg-green-600 transition"
+            >
+              OK
+            </button>
           </div>
         </div>
       )}
