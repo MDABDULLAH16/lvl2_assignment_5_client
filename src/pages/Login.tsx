@@ -6,8 +6,6 @@ import { verifyToken } from "@/utils/verefyToken";
 import { useAppDispatch } from "@/redux/hooks"; // Import useAppSelector
 import { setUser } from "@/redux/features/authSlice"; // Import slice actions and selectors
 import { setUserDetails } from "@/redux/features/userDetailsSlice";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { SerializedError } from "@reduxjs/toolkit";
 
 interface LoginFormInputs {
   email: string;
@@ -26,13 +24,7 @@ const Login: React.FC = () => {
 
   const [loginUser, { data, error, isLoading, isSuccess }] =
     useLoginUserMutation();
-
-  // Set user details
-  useEffect(() => {
-    if (data?.data?.userInfo) {
-      dispatch(setUserDetails({ userDetails: data.data.userInfo }));
-    }
-  }, [data, dispatch]);
+  dispatch(setUserDetails({ userDetails: data?.data?.userInfo }));
 
   // Handle form submit
   const onSubmit = async (formData: LoginFormInputs) => {
@@ -55,15 +47,6 @@ const Login: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [isSuccess, data, navigate, from]);
-
-  const getErrorMessage = (error: FetchBaseQueryError | SerializedError) => {
-    if ("data" in error) {
-      return (
-        (error.data as { message?: string })?.message || "Something went wrong"
-      );
-    }
-    return "Something went wrong.";
-  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -130,7 +113,7 @@ const Login: React.FC = () => {
 
         {error && (
           <p className="text-red-500 mt-2">
-            Login failed: {getErrorMessage(error)}
+            Login failed: {error?.data?.message || "Something went wrong"}
           </p>
         )}
       </div>
