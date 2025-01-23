@@ -12,6 +12,11 @@ const ServiceDetail: React.FC = () => {
 
   const service: TService | undefined = services?.data;
 
+  // Filter slots with isBooked: "available"
+  const availableSlots = slotData?.data.filter(
+    (slot: { isBooked: string }) => slot.isBooked === "available"
+  );
+
   const handleSelectSlot = (slotId: string) => {
     setSelectedSlotId(slotId);
   };
@@ -44,9 +49,9 @@ const ServiceDetail: React.FC = () => {
           </p>
           <p className="text-gray-700 text-md mt-4">{service?.description}</p>
 
-          {/* Pass slotData to Slots component */}
-          {slotData?.data && (
-            <Slots slotData={slotData.data} onSelectSlot={handleSelectSlot} />
+          {/* Pass filtered slotData to Slots component */}
+          {availableSlots && availableSlots.length > 0 && (
+            <Slots slotData={availableSlots} onSelectSlot={handleSelectSlot} />
           )}
 
           <Link to={`/booking/${_id}`}>

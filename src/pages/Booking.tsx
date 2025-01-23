@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { RootState } from "@/redux/store";
 import {
   useGetSingleServiceQuery,
   useCreateBookingMutation,
-  useGetUserBookingQuery,
 } from "@/redux/api/baseApi";
 import { clearBooking } from "@/redux/features/bookingSlice";
 import { TService } from "@/types/TServices";
@@ -15,7 +14,7 @@ const Booking: React.FC = () => {
   const dispatch = useAppDispatch();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const navigate = useNavigate();
   const user = useAppSelector(
     (state: RootState) => state.userDetails.userDetails
   );
@@ -68,6 +67,7 @@ const Booking: React.FC = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    navigate("/services");
   };
 
   return (

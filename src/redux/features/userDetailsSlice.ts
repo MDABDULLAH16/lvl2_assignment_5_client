@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
@@ -22,22 +21,25 @@ const initialState: UserDetailsState = {
 
 const userDetailsSlice = createSlice({
   name: "userDetails",
-  initialState: {
-    userDetails: localStorage.getItem("userDetails")
-      ? JSON.parse(localStorage.getItem("userDetails")!)
-      : null,
-  },
+  initialState: (() => {
+    try {
+      const storedUserDetails = localStorage.getItem("userDetails");
+      if (storedUserDetails) {
+        return { userDetails: JSON.parse(storedUserDetails) };
+      }
+    } catch (error) {
+      console.error("Error parsing userDetails from localStorage:", error);
+      localStorage.removeItem("userDetails"); // Clear corrupted data
+    }
+    return initialState;
+  })(),
   reducers: {
     setUserDetails: (state, action) => {
       state.userDetails = action.payload.userDetails;
-
-      // Save userDetails to localStorage
       localStorage.setItem("userDetails", JSON.stringify(state.userDetails));
     },
     clearUserDetails: (state) => {
       state.userDetails = null;
-
-      // Remove from localStorage
       localStorage.removeItem("userDetails");
     },
   },

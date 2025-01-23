@@ -27,32 +27,67 @@ export const router = createBrowserRouter([
       },
       {
         path: "/services",
-        element: (
-          <ProtectedRoute>
-            <Services></Services>{" "}
-          </ProtectedRoute>
-        ),
+        element: <Services></Services>,
       },
       {
         path: "/booking/:_id",
-        element: <Booking></Booking>,
+        element: (
+          <ProtectedRoute>
+            <Booking></Booking>
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/service-details/:_id",
         element: (
           <ProtectedRoute>
-            <ServiceDetails></ServiceDetails>{" "}
+            <ServiceDetails></ServiceDetails>
           </ProtectedRoute>
         ),
       },
-      { path: "/admin-panel", element: <AdminPanel></AdminPanel> },
-      { path: "/user-dashboard", element: <UserDashboard></UserDashboard> },
-      { path: "/booking", element: <UserBooking></UserBooking> },
+      {
+        path: "/admin-panel",
+        element: (
+          <ProtectedRoute>
+            {" "}
+            <AdminPanel></AdminPanel>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/user-dashboard",
+        element: (
+          <ProtectedRoute>
+            <UserDashboard></UserDashboard>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/booking",
+        element: (
+          <ProtectedRoute>
+            <UserBooking></UserBooking>
+          </ProtectedRoute>
+        ),
+      },
       // { path: "/admin-services", element: <ServiceManagement></ServiceManagement> },
-      { path: "/create-slot", element: <CreateSlot></CreateSlot> },
+      {
+        path: "/create-slot",
+        element: (
+          <ProtectedRoute>
+            {" "}
+            <CreateSlot></CreateSlot>{" "}
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "/update-service/:_id",
-        element: <UpdateService></UpdateService>,
+        element: (
+          <ProtectedRoute>
+            {" "}
+            <UpdateService></UpdateService>
+          </ProtectedRoute>
+        ),
       },
       { path: "/login", element: <Login></Login> },
       { path: "/about", element: <About></About> },

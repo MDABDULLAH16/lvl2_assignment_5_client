@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Select,
   SelectTrigger,
@@ -22,11 +22,9 @@ interface SlotsProps {
 }
 
 const Slots: React.FC<SlotsProps> = ({ slotData, onSelectSlot }) => {
-  const [selectedSlot, setSelectedSlot] = useState<string>("");
   const dispatch = useDispatch();
 
   const handleSelect = (slotId: string) => {
-    setSelectedSlot(slotId);
     onSelectSlot(slotId);
 
     // Find the selected slot from slotData
@@ -46,18 +44,26 @@ const Slots: React.FC<SlotsProps> = ({ slotData, onSelectSlot }) => {
 
   return (
     <div>
-      <Select value={selectedSlot} onValueChange={handleSelect}>
-        <SelectTrigger className="w-[220px] border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <SelectValue placeholder="Select a Slot" />
-        </SelectTrigger>
-        <SelectContent className="max-h-48 overflow-y-auto bg-white border border-gray-200 shadow-md rounded-md">
-          {slotData.map((slot) => (
-            <SelectItem key={slot._id} value={slot._id}>
-              {`${slot.date} - ${slot.startTime}`}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {slotData.length === 0 ? (
+        <p className="text-gray-500">No slots available</p>
+      ) : (
+        <Select onValueChange={handleSelect} aria-label="Select a time slot">
+          <SelectTrigger className="w-[220px] border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <SelectValue placeholder="Select a Slot" />
+          </SelectTrigger>
+          <SelectContent className="max-h-48 overflow-y-auto bg-white border border-gray-200 shadow-md rounded-md">
+            {slotData.map((slot) => (
+              <SelectItem
+                key={slot._id}
+                value={slot._id}
+                aria-selected={slot._id === slotData[0]?._id} // Accessibility
+              >
+                {`${slot.date} - ${slot.startTime}`}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
     </div>
   );
 };

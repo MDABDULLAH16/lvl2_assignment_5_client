@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLoginUserMutation } from "@/redux/api/baseApi";
 import { verifyToken } from "@/utils/verefyToken";
 import { useAppDispatch } from "@/redux/hooks"; // Import useAppSelector
@@ -34,16 +34,19 @@ const Login: React.FC = () => {
   };
 
   // Success effect to show modal and navigate
+  const location = useLocation();
+  const from = (location.state as { from?: Location })?.from?.pathname || "/";
+
   useEffect(() => {
     if (isSuccess && data) {
       setShowModal(true);
       const timer = setTimeout(() => {
         setShowModal(false);
-        navigate("/"); // Redirect to home page after successful login
+        navigate(from); // Redirect back to the previous page
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [isSuccess, data, navigate]);
+  }, [isSuccess, data, navigate, from]);
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
