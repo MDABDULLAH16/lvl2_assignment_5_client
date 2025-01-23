@@ -37,6 +37,8 @@ const Slots: React.FC<SlotsProps> = ({ slotData, onSelectSlot }) => {
           date: selectedSlotData.date,
           startTime: selectedSlotData.startTime,
           endTime: selectedSlotData.endTime,
+          serviceId: "",
+          isBooked: "",
         })
       );
     }

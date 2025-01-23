@@ -28,7 +28,7 @@ const Booking: React.FC = () => {
   );
 
   const handlePayment = async () => {
-    if (!selectedService || !selectedSlot) {
+    if (!selectedService || !selectedSlot || !selectedService._id) {
       console.log("Missing data:", {
         selectedService,
         selectedSlot,
@@ -42,7 +42,7 @@ const Booking: React.FC = () => {
     try {
       const bookingData = {
         customer: user?._id || "guest",
-        serviceId: selectedService._id,
+        serviceId: selectedService._id, // Assured to be a string
         slotId: selectedSlot.id,
         serviceName: selectedService.name,
         userName: user?.name || "Guest",

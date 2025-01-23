@@ -5,10 +5,11 @@ import {
   useGetAllServicesQuery,
 } from "@/redux/api/baseApi";
 import { TService } from "@/types/TServices";
-import AddService from "./addServices";
+
 import DeleteConfirmationModal from "@/components/ui/deletedModal";
 import SuccessModal from "@/components/ui/successModal";
 import { Link } from "react-router-dom";
+import AddService from "./AddServices";
 
 const ServiceManagement: React.FC = () => {
   const {

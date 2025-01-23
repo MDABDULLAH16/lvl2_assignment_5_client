@@ -33,7 +33,7 @@ const ServiceCard: React.FC<TService> = ({
           <div className="card-actions">
             <Link
               to={`/service-details/${_id}`}
-              onClick={() => setServiceId(_id)}
+              onClick={() => setServiceId(_id as string)}
               className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white  md:py-2 px-2 py-1 md:px-3 rounded-lg shadow-inner focus:outline-none transition ease-in-out duration-150"
             >
               Details

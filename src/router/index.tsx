@@ -13,6 +13,7 @@ import CreateSlot from "@/pages/CreateSlot";
 import UserDashboard from "@/pages/UserDashboard";
 import UserBooking from "@/pages/UserBooking";
 import About from "@/pages/About";
+import NotFound from "@/components/NotFound";
 
 // import AdminPanel from "@/pages/AdminPanel";
 
@@ -92,6 +93,7 @@ export const router = createBrowserRouter([
       { path: "/login", element: <Login></Login> },
       { path: "/about", element: <About></About> },
       { path: "/register", element: <Register></Register> },
+      { path: "/*", element: <NotFound></NotFound> },
     ],
   },
 ]);
