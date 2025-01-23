@@ -10,6 +10,7 @@ import Booking from "@/pages/Booking";
 import AdminPanel from "@/pages/AdminPanel";
 import UpdateService from "@/pages/UpdateService";
 import CreateSlot from "@/pages/CreateSlot";
+import UserDashboard from "@/pages/UserDashboard";
 
 // import AdminPanel from "@/pages/AdminPanel";
 
@@ -43,6 +44,7 @@ export const router = createBrowserRouter([
         ),
       },
       { path: "/admin-panel", element: <AdminPanel></AdminPanel> },
+      { path: "/user-dashboard", element: <UserDashboard></UserDashboard> },
       // { path: "/admin-services", element: <ServiceManagement></ServiceManagement> },
       { path: "/create-slot", element: <CreateSlot></CreateSlot> },
       {

@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { setSlot } from "@/redux/features/bookingSlice";
 
 interface Slot {
+  _id: string;
   date: string;
   startTime: string;
   endTime: string;
@@ -34,6 +35,7 @@ const Slots: React.FC<SlotsProps> = ({ slotData, onSelectSlot }) => {
     if (selectedSlotData) {
       dispatch(
         setSlot({
+          id: selectedSlotData._id,
           date: selectedSlotData.date,
           startTime: selectedSlotData.startTime,
           endTime: selectedSlotData.endTime,
