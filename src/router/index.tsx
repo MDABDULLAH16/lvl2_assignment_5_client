@@ -11,6 +11,8 @@ import AdminPanel from "@/pages/AdminPanel";
 import UpdateService from "@/pages/UpdateService";
 import CreateSlot from "@/pages/CreateSlot";
 import UserDashboard from "@/pages/UserDashboard";
+import UserBooking from "@/pages/UserBooking";
+import About from "@/pages/About";
 
 // import AdminPanel from "@/pages/AdminPanel";
 
@@ -45,6 +47,7 @@ export const router = createBrowserRouter([
       },
       { path: "/admin-panel", element: <AdminPanel></AdminPanel> },
       { path: "/user-dashboard", element: <UserDashboard></UserDashboard> },
+      { path: "/booking", element: <UserBooking></UserBooking> },
       // { path: "/admin-services", element: <ServiceManagement></ServiceManagement> },
       { path: "/create-slot", element: <CreateSlot></CreateSlot> },
       {
@@ -52,6 +55,7 @@ export const router = createBrowserRouter([
         element: <UpdateService></UpdateService>,
       },
       { path: "/login", element: <Login></Login> },
+      { path: "/about", element: <About></About> },
       { path: "/register", element: <Register></Register> },
     ],
   },

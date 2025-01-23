@@ -5,6 +5,7 @@ import { RootState } from "@/redux/store";
 import {
   useGetSingleServiceQuery,
   useCreateBookingMutation,
+  useGetUserBookingQuery,
 } from "@/redux/api/baseApi";
 import { clearBooking } from "@/redux/features/bookingSlice";
 import { TService } from "@/types/TServices";
@@ -19,6 +20,7 @@ const Booking: React.FC = () => {
     (state: RootState) => state.userDetails.userDetails
   );
   const { data: services } = useGetSingleServiceQuery(_id!);
+
   const [createBooking] = useCreateBookingMutation();
   const selectedService: TService | undefined = services?.data;
 

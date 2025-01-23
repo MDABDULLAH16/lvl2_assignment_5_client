@@ -168,6 +168,12 @@ export const baseApi = createApi({
         body: bookingData,
       }),
     }),
+    getUserBooking: builder.query({
+      query: () => ({
+        url: "/my-bookings",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -189,4 +195,5 @@ export const {
   useUpdateUserMutation,
   useGetAllUserQuery,
   useCreateBookingMutation,
+  useGetUserBookingQuery,
 } = baseApi;
