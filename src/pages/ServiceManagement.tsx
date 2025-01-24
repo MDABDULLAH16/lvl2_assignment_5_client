@@ -91,21 +91,23 @@ const ServiceManagement: React.FC = () => {
                 ${service.price}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                <Link
-                  to={`/update-service/${service._id}`}
-                  className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded"
-                >
-                  Update
-                </Link>
-                <button
-                  onClick={() => {
-                    setDeleteServiceId(service._id as string);
-                    setIsDeleteModalOpen(true);
-                  }}
-                  className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded ml-2"
-                >
-                  Delete
-                </button>
+                <div className="flex flex-col sm:flex-row justify-center gap-2">
+                  <Link
+                    to={`/update-service/${service._id}`}
+                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-center"
+                  >
+                    Update
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setDeleteServiceId(service._id as string);
+                      setIsDeleteModalOpen(true);
+                    }}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-center"
+                  >
+                    Delete
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
