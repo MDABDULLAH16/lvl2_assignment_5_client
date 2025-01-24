@@ -14,6 +14,7 @@ import UserDashboard from "@/pages/UserDashboard";
 import UserBooking from "@/pages/UserBooking";
 import About from "@/pages/About";
 import NotFound from "@/components/NotFound";
+import AllUserBooking from "@/pages/AllUserBooking";
 
 // import AdminPanel from "@/pages/AdminPanel";
 
@@ -64,10 +65,18 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/booking",
+        path: "/my-booking",
         element: (
           <ProtectedRoute>
             <UserBooking></UserBooking>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/All-UserBooking",
+        element: (
+          <ProtectedRoute>
+            <AllUserBooking></AllUserBooking>
           </ProtectedRoute>
         ),
       },

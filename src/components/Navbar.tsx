@@ -64,13 +64,23 @@ const Navbar: React.FC = () => {
             >
               Services
             </Link>
-            <Link
-              to="/booking"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-            >
-              Booking
-            </Link>
 
+            {/* Conditional Links Based on Role */}
+            {userDetailsForNav?.role === "admin" ? (
+              <Link
+                to="/All-UserBooking"
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              >
+                User Bookings
+              </Link>
+            ) : (
+              <Link
+                to="/my-booking"
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              >
+                My Bookings
+              </Link>
+            )}
             {/* Conditional Links Based on Role */}
             {userDetailsForNav?.role === "admin" ? (
               <Link

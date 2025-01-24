@@ -9,7 +9,7 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
     (state: RootState) => state?.userDetails.userDetails
   );
   // const token = useAppSelector(selectCurrentUser);
-  console.log("token", token);
+  // console.log("token", token);
 
   const location = useLocation();
 

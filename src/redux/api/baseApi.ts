@@ -174,6 +174,12 @@ export const baseApi = createApi({
         method: "GET",
       }),
     }),
+    getAllUserBooking: builder.query({
+      query: () => ({
+        url: "/bookings",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -196,4 +202,5 @@ export const {
   useGetAllUserQuery,
   useCreateBookingMutation,
   useGetUserBookingQuery,
+  useGetAllUserBookingQuery,
 } = baseApi;
