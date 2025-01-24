@@ -44,7 +44,7 @@ const Register: React.FC = () => {
       setShowModal(true); // Show the modal on successful sign-up
       setTimeout(() => {
         setShowModal(false);
-        navigate("/"); // Redirect to the home page after the modal disappears
+        navigate("/login"); // Redirect to the home page after the modal disappears
       }, 2000); // Show the modal for 2 seconds before redirecting
     }
   }, [isSuccess, navigate]);
