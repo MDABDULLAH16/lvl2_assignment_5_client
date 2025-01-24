@@ -2,24 +2,36 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo_2 from "../assets/logo1.png";
 
-import { clearUser } from "@/redux/features/authSlice";
 import { RootState } from "@/redux/store";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { clearUserDetails } from "@/redux/features/userDetailsSlice";
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // const [userDetailsForNav, setUserDetails] = useState(false);
 
-  const user = useAppSelector(
+  // const user = useAppSelector((state: RootState) => state.auth.user);
+  const userDetailsForNav = useAppSelector(
     (state: RootState) => state?.userDetails.userDetails
   );
+
+  // if (user !== undefined) {
+
+  // }
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   // Handle Logout
+  // const handleLogout = () => {
+  //   dispatch(clearUser());
+  //   navigate("/login");
+  // };
   const handleLogout = () => {
-    dispatch(clearUser());
-    navigate("/login");
+    console.log("Before logout:", userDetailsForNav);
+    dispatch(clearUserDetails());
+    console.log("After logout:", userDetailsForNav);
+    navigate("/");
   };
 
   // Toggle mobile menu visibility
@@ -60,7 +72,7 @@ const Navbar: React.FC = () => {
             </Link>
 
             {/* Conditional Links Based on Role */}
-            {user?.role === "admin" ? (
+            {userDetailsForNav?.role === "admin" ? (
               <Link
                 to="/admin-panel"
                 className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
@@ -83,9 +95,11 @@ const Navbar: React.FC = () => {
               About Us
             </Link>
 
-            {user ? (
+            {userDetailsForNav ? (
               <div className="flex items-center space-x-4">
-                <span className="text-white font-bold">{user.name}</span>
+                <span className="text-white font-bold">
+                  {userDetailsForNav.name}
+                </span>
                 <button
                   onClick={handleLogout}
                   className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded"
@@ -152,7 +166,7 @@ const Navbar: React.FC = () => {
             </Link>
 
             {/* Conditional Links for Mobile */}
-            {user?.role === "admin" ? (
+            {userDetailsForNav?.role === "admin" ? (
               <Link
                 to="/admin-panel"
                 className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
@@ -175,9 +189,11 @@ const Navbar: React.FC = () => {
               About Us
             </Link>
 
-            {user ? (
+            {userDetailsForNav ? (
               <div className="flex items-center space-x-4">
-                <span className="text-white font-bold">{user.name}</span>
+                <span className="text-white font-bold">
+                  {userDetailsForNav.name}
+                </span>
                 <button
                   onClick={handleLogout}
                   className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded"

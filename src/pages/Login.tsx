@@ -1,15 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLoginUserMutation } from "@/redux/api/baseApi";
 import { verifyToken } from "@/utils/verefyToken";
-import { useAppDispatch } from "@/redux/hooks"; // Import useAppSelector
-import { setUser } from "@/redux/features/authSlice"; // Import slice actions and selectors
+import { useAppDispatch } from "@/redux/hooks";
+import { setUser } from "@/redux/features/authSlice";
 import { setUserDetails } from "@/redux/features/userDetailsSlice";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 interface LoginFormInputs {
   email: string;
   password: string;
+}
+
+interface APIError {
+  message: string;
 }
 
 const Login: React.FC = () => {
@@ -24,13 +30,34 @@ const Login: React.FC = () => {
 
   const [loginUser, { data, error, isLoading, isSuccess }] =
     useLoginUserMutation();
-  dispatch(setUserDetails({ userDetails: data?.data?.userInfo }));
+
+  const isFetchBaseQueryError = (
+    error: unknown
+  ): error is FetchBaseQueryError & { data: APIError } => {
+    return (
+      typeof error === "object" &&
+      error !== null &&
+      "data" in error &&
+      typeof (error as any).data?.message === "string"
+    );
+  };
+
+  // Dispatch user details if data is available
+  useEffect(() => {
+    if (data?.data?.userInfo) {
+      dispatch(setUserDetails({ userDetails: data.data.userInfo }));
+    }
+  }, [data, dispatch]);
 
   // Handle form submit
   const onSubmit = async (formData: LoginFormInputs) => {
-    const res = await loginUser(formData).unwrap();
-    const user = verifyToken(res?.data?.accessToken);
-    dispatch(setUser({ user: user, token: res?.data?.accessToken }));
+    try {
+      const res = await loginUser(formData).unwrap();
+      const user = verifyToken(res?.data?.accessToken);
+      dispatch(setUser({ user: user, token: res?.data?.accessToken }));
+    } catch (err) {
+      console.error("Login failed:", err);
+    }
   };
 
   // Success effect to show modal and navigate
@@ -111,9 +138,9 @@ const Login: React.FC = () => {
           </div>
         </form>
 
-        {error && (
+        {error && isFetchBaseQueryError(error) && (
           <p className="text-red-500 mt-2">
-            Login failed: {error?.data?.message || "Something went wrong"}
+            Login failed: {error.data.message || "Something went wrong"}
           </p>
         )}
       </div>
