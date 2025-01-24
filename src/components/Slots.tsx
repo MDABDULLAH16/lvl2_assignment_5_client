@@ -46,6 +46,7 @@ const Slots: React.FC<SlotsProps> = ({ slotData, onSelectSlot }) => {
 
   return (
     <div>
+      {/* Show a message if no slots are available */}
       {slotData.length === 0 ? (
         <p className="text-gray-500">No slots available</p>
       ) : (

@@ -93,6 +93,11 @@ const Booking: React.FC = () => {
                 <p className="text-gray-600">
                   <strong>Description:</strong> {selectedService.description}
                 </p>
+                {!selectedSlot && (
+                  <p className="text-red-500 mt-2">
+                    No slots available for this service at the moment.
+                  </p>
+                )}
               </>
             ) : (
               <p className="text-red-500">No service selected.</p>
