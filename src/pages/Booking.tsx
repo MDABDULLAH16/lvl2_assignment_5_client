@@ -51,13 +51,15 @@ const Booking: React.FC = () => {
         time: `${selectedSlot.startTime} - ${selectedSlot.endTime}`,
       };
 
-      console.log("Booking data to be sent:", bookingData);
+      // console.log("Booking data to be sent:", bookingData);
 
       const response = await createBooking(bookingData).unwrap();
-      console.log("Booking successful:", response);
-
+      // console.log("Booking successful:", response);
+      if (response.success ===true) {
+        window.location.href = response.data.payment_url
+      }
       dispatch(clearBooking());
-      setIsModalOpen(true); // Open the confirmation modal
+      // setIsModalOpen(true); // Open the confirmation modal
     } catch (error) {
       console.error("Booking failed:", error);
     } finally {

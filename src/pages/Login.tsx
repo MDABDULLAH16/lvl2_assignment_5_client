@@ -53,6 +53,7 @@ const Login: React.FC = () => {
   const onSubmit = async (formData: LoginFormInputs) => {
     try {
       const res = await loginUser(formData).unwrap();
+      
       const user = verifyToken(res?.data?.accessToken);
       dispatch(setUser({ user: user, token: res?.data?.accessToken }));
     } catch (err) {
