@@ -1,20 +1,25 @@
-// import { selectCurrentUser } from "@/redux/features/authSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { RootState } from "@/redux/store";
 import { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
-const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-  const token = useAppSelector(
-    (state: RootState) => state?.userDetails.userDetails
-  );
-  // const token = useAppSelector(selectCurrentUser);
-  // console.log("token", token);
+interface ProtectedRouteProps {
+  children: ReactNode;
+  requiredRole?: "admin" | "user"; // Define role-based protection
+}
 
+const ProtectedRoute = ({ children, requiredRole = "user" }: ProtectedRouteProps) => {
+  const user = useAppSelector((state: RootState) => state?.userDetails?.userDetails);
   const location = useLocation();
 
-  if (!token) {
-    return <Navigate to="/login" replace={true} state={{ from: location }} />;
+  if (!user) {
+    // Redirect if not logged in
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  if (requiredRole === "admin" && user.role !== "admin") {
+    // Redirect non-admin users trying to access admin routes
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

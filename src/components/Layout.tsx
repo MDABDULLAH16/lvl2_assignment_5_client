@@ -1,13 +1,16 @@
 import Footer from "./Footer";
 import Navbar from "./Navbar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 
 const Layout = () => {
+  const pathname = useLocation().pathname;
+ const  isAdmin = pathname.includes("admin",);
+ const  isUser = pathname.includes("user-dashboard",);
   return (
     <div>
-      <Navbar></Navbar>
+     {isAdmin || isUser?"": <Navbar></Navbar>}
       <Outlet></Outlet>
-      <Footer></Footer>
+      {isAdmin || isUser?"": <Footer></Footer>}
     </div>
   );
 };

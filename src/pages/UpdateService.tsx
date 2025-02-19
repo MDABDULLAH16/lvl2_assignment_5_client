@@ -72,7 +72,7 @@ const ServiceUpdate: React.FC = () => {
       setShowSuccessModal(true);
       setTimeout(() => {
         setShowSuccessModal(false);
-        navigate("/admin-panel"); // Redirect after successful update
+        navigate("/admin-panel/all-services");
       }, 2000);
     }
   }, [isSuccess, navigate]);
@@ -98,14 +98,14 @@ const ServiceUpdate: React.FC = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
+    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
       <h1 className="text-2xl font-semibold mb-6 text-center text-gray-700">
         Update Service
       </h1>
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {["name", "price", "description", "duration", "image"].map((field) => (
-          <div key={field} className="relative">
-            <label className="block text-gray-700 font-medium">
+          <div key={field} className="flex flex-col">
+            <label className="text-gray-700 font-medium mb-1">
               {field.charAt(0).toUpperCase() + field.slice(1)}
             </label>
             <input
@@ -121,7 +121,7 @@ const ServiceUpdate: React.FC = () => {
             />
           </div>
         ))}
-        <div className="text-center">
+        <div className="md:col-span-2 flex justify-center">
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500"

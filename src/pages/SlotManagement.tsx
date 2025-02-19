@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 interface SlotData {
   _id: string;
-  service: string; // This stores the service ID
+  service: string;
   date: string;
   startTime: string;
   endTime: string;
@@ -31,12 +31,12 @@ const SlotManagement: React.FC = () => {
   const navigate = useNavigate();
 
   if (isLoading) {
-    return <p>Loading slots...</p>;
+    return <p className="text-gray-800 dark:text-gray-300">Loading slots...</p>;
   }
 
   const getServiceName = (serviceId: string) => {
     const service = servicesData?.data?.find((s: any) => s._id === serviceId);
-    return service ? service.name : "Bangla Service😎";
+    return service ? service.name : "Unknown Service";
   };
 
   const openModal = (slot: SlotData) => {
@@ -83,14 +83,12 @@ const SlotManagement: React.FC = () => {
   };
 
   return (
-    <div className="p-5">
-      <h1 className="text-2xl font-bold mb-4">
-        Slot Management: {slotsData?.data.length}
-      </h1>
-      <div className="mt-5">
+    <div className="p-5 bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-800 dark:text-gray-300">
+      <h1 className="text-2xl font-bold mb-4">Slot Management</h1>
+      <div className="mt-5 flex justify-end">
         <button
           onClick={() => navigate("/create-slot")}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
         >
           Create New Slot
         </button>
@@ -99,10 +97,10 @@ const SlotManagement: React.FC = () => {
         {slotsData?.data?.map((slot: SlotData) => (
           <div
             key={slot._id}
-            className="border rounded p-4 shadow-md bg-white flex flex-col justify-between"
+            className="border rounded p-4 shadow-md bg-white dark:bg-gray-800 flex flex-col justify-between"
           >
             <div>
-              <h2 className="text-lg font-bold mb-2">
+              <h2 className="text-lg font-bold mb-2 dark:text-gray-200">
                 {getServiceName(slot.service)}
               </h2>
               <p className="text-sm">Date: {slot.date}</p>
@@ -110,7 +108,9 @@ const SlotManagement: React.FC = () => {
               <p className="text-sm">End Time: {slot.endTime}</p>
               <p
                 className={`text-sm font-bold ${
-                  slot.isBooked === "booked" ? "text-red-500" : "text-green-500"
+                  slot.isBooked === "booked"
+                    ? "text-red-500"
+                    : "text-green-500"
                 }`}
               >
                 Status: {slot.isBooked === "booked" ? "Booked" : "Available"}
@@ -131,9 +131,10 @@ const SlotManagement: React.FC = () => {
         ))}
       </div>
 
+      {/* Update Slot Modal */}
       {modalVisible && selectedSlot && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
+          <div className="bg-white dark:bg-gray-800 dark:text-gray-300 p-6 rounded shadow-lg w-96">
             <h2 className="text-xl font-bold mb-4">Update Slot</h2>
             <form
               onSubmit={(e) => {
@@ -150,7 +151,7 @@ const SlotManagement: React.FC = () => {
                   onChange={(e) =>
                     setSelectedSlot({ ...selectedSlot, date: e.target.value })
                   }
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
                 />
               </div>
               <div>
@@ -164,7 +165,7 @@ const SlotManagement: React.FC = () => {
                       startTime: e.target.value,
                     })
                   }
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
                 />
               </div>
               <div>
@@ -178,7 +179,7 @@ const SlotManagement: React.FC = () => {
                       endTime: e.target.value,
                     })
                   }
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
                 />
               </div>
               <div>
@@ -191,7 +192,7 @@ const SlotManagement: React.FC = () => {
                       isBooked: e.target.value,
                     })
                   }
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
                   disabled={selectedSlot.isBooked === "booked"}
                 >
                   <option value="available">Available</option>
@@ -207,26 +208,11 @@ const SlotManagement: React.FC = () => {
               <button
                 type="button"
                 onClick={closeModal}
-                className="mt-2 bg-gray-300 px-4 py-2 rounded w-full hover:bg-gray-400 transition"
+                className="mt-2 bg-gray-300 dark:bg-gray-700 dark:text-gray-200 px-4 py-2 rounded w-full hover:bg-gray-400 dark:hover:bg-gray-600 transition"
               >
                 Cancel
               </button>
             </form>
-          </div>
-        </div>
-      )}
-
-      {confirmModal.visible && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
-            <h2 className="text-xl font-bold mb-4">Confirmation</h2>
-            <p className="mb-4">{confirmModal.message}</p>
-            <button
-              onClick={confirmModal.onConfirm}
-              className="bg-green-500 text-white px-4 py-2 rounded w-full hover:bg-green-600 transition"
-            >
-              OK
-            </button>
           </div>
         </div>
       )}

@@ -1,152 +1,87 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo_2 from "../assets/logo1.png";
-
+import logoDark from "../assets/logo1.png";
+import logoLight from "../assets/logo-2.png";
 import { RootState } from "@/redux/store";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { clearUserDetails } from "@/redux/features/userDetailsSlice";
+import { Moon, Sun, Menu, X } from "lucide-react";
 
 const Navbar: React.FC = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  // const [userDetailsForNav, setUserDetails] = useState(false);
-
-  // const user = useAppSelector((state: RootState) => state.auth.user);
-  const userDetailsForNav = useAppSelector(
-    (state: RootState) => state?.userDetails.userDetails
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("theme") === "dark"
   );
 
-  // if (user !== undefined) {
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
 
-  // }
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const userDetails = useAppSelector((state: RootState) => state.userDetails.userDetails);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  // Handle Logout
-  // const handleLogout = () => {
-  //   dispatch(clearUser());
-  //   navigate("/login");
-  // };
   const handleLogout = () => {
-    console.log("Before logout:", userDetailsForNav);
     dispatch(clearUserDetails());
-    console.log("After logout:", userDetailsForNav);
-    navigate("/");
-  };
-
-  // Toggle mobile menu visibility
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+    navigate("/login");
   };
 
   return (
-    <nav className="bg-[#0a426b]">
+    <nav className="bg-white dark:bg-gray-900 shadow-lg transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo on the left */}
-          <div className="flex-shrink-0">
-            <Link to="/">
-              <img className="h-14 w-auto" src={logo_2} alt="Logo" />
-            </Link>
-          </div>
+          {/* Logo */}
+          <Link to="/" className="flex-shrink-0">
+            <img className="h-12 w-auto" src={darkMode ? logoDark : logoLight} alt="SparkWave" />
+          </Link>
 
-          {/* Nav Links (Desktop) on the right */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Link
-              to="/"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-            >
-              Home
-            </Link>
-            <Link
-              to="/services"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-            >
-              Services
-            </Link>
+          {/* Desktop Nav Links */}
+          <div className="hidden md:flex items-center space-x-6">
+            <NavLink to="/" label="Home" />
+            <NavLink to="/services" label="Services" />
+            {userDetails?.role === "admin" && <NavLink to="/admin-panel/all-user-bookings" label="User Bookings" />}
+            {userDetails?.role === "admin" && <NavLink to="/admin-panel/dashboard" label="Admin Panel" />}
+            {userDetails?.role === "user" && <NavLink to="/my-booking" label="My Bookings" />}
+            {userDetails?.role === "user" && <NavLink to="/user-dashboard" label="Dashboard" />}
+            <NavLink to="/about" label="About Us" />
 
-            {/* Conditional Links Based on Role */}
-            {userDetailsForNav?.role === "admin" ? (
-              <Link
-                to="/All-UserBooking"
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              >
-                User Bookings
-              </Link>
-            ) : (
-              <Link
-                to="/my-booking"
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              >
-                My Bookings
-              </Link>
-            )}
-            {/* Conditional Links Based on Role */}
-            {userDetailsForNav?.role === "admin" ? (
-              <Link
-                to="/admin-panel"
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Admin Panel
-              </Link>
-            ) : (
-              <Link
-                to="/user-dashboard"
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              >
-                User Dashboard
-              </Link>
-            )}
+            {/* Dark Mode Toggle */}
+            <button onClick={() => setDarkMode(!darkMode)} className="p-2 text-gray-800 dark:text-gray-200 hover:text-blue-500 transition">
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
 
-            <Link
-              to="/about"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-            >
-              About Us
-            </Link>
-
-            {userDetailsForNav ? (
+            {/* User Authentication */}
+            {userDetails ? (
               <div className="flex items-center space-x-4">
-                <span className="text-white font-bold">
-                  {userDetailsForNav.name}
-                </span>
+                <span className="text-gray-800 dark:text-gray-200 font-medium">{userDetails.name}</span>
                 <button
                   onClick={handleLogout}
-                  className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded"
+                  className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition transform hover:scale-105"
                 >
                   Logout
                 </button>
               </div>
             ) : (
-              <Link to="/login" className="text-blue-400">
+              <Link
+                to="/login"
+                className="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition transform hover:scale-105"
+              >
                 Login
               </Link>
             )}
           </div>
 
-          {/* Mobile Menu Button (Hamburger icon) */}
-          <div className="-mr-2 flex md:hidden">
-            <button
-              onClick={toggleMobileMenu}
-              type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-            >
-              <span className="sr-only">Open main menu</span>
-              <svg
-                className="h-6 w-6"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16m-7 6h7"
-                />
-              </svg>
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-800 dark:text-gray-200">
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
@@ -154,82 +89,49 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link
-              to="/"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-            >
-              Home
-            </Link>
-            <Link
-              to="/services"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-            >
-              Services
-            </Link>
+        <div className="md:hidden bg-white dark:bg-gray-800 shadow-lg p-4 space-y-4">
+          <NavLink to="/" label="Home" />
+          <NavLink to="/services" label="Services" />
+          {userDetails?.role === "admin" && <NavLink to="/All-UserBooking" label="User Bookings" />}
+          {userDetails?.role === "admin" && <NavLink to="/admin-panel/dashboard" label="Admin Panel" />}
+          {userDetails?.role === "user" && <NavLink to="/my-booking" label="My Bookings" />}
+          {userDetails?.role === "user" && <NavLink to="/user-dashboard" label="Dashboard" />}
+          <NavLink to="/about" label="About Us" />
 
-            {/* Conditional Links for Mobile */}
-            {userDetailsForNav?.role === "admin" ? (
-              <Link
-                to="/All-UserBooking"
-                className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-              >
-                User Bookings
-              </Link>
-            ) : (
-              <Link
-                to="/my-booking"
-                className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-              >
-                My Bookings
-              </Link>
-            )}
-            {userDetailsForNav?.role === "admin" ? (
-              <Link
-                to="/admin-panel"
-                className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-              >
-                Admin Panel
-              </Link>
-            ) : (
-              <Link
-                to="/user-dashboard"
-                className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-              >
-                User Dashboard
-              </Link>
-            )}
+          {/* Dark Mode Toggle */}
+          <button onClick={() => setDarkMode(!darkMode)} className="p-2 text-gray-800 dark:text-gray-200 hover:text-blue-500 transition">
+            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
 
+          {/* User Authentication */}
+          {userDetails ? (
+            <div className="flex flex-col space-y-2">
+              <span className="text-gray-800 dark:text-gray-200 font-medium">{userDetails.name}</span>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition transform hover:scale-105"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
             <Link
-              to="/about"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+              to="/login"
+              className="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition transform hover:scale-105 block"
             >
-              About Us
+              Login
             </Link>
-
-            {userDetailsForNav ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-white font-bold">
-                  {userDetailsForNav.name}
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded"
-                >
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <Link to="/login" className="text-blue-400">
-                Login
-              </Link>
-            )}
-          </div>
+          )}
         </div>
       )}
     </nav>
   );
 };
+
+const NavLink: React.FC<{ to: string; label: string }> = ({ to, label }) => (
+  <Link to={to} className="text-gray-800 dark:text-gray-200 hover:text-blue-500 transition">
+    {label}
+  </Link>
+);
 
 export default Navbar;

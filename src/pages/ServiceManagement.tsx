@@ -16,7 +16,7 @@ const ServiceManagement: React.FC = () => {
     data: servicesData,
     isLoading,
     isError,
-    refetch, // Refetch method for manually fetching the updated data
+    refetch,
   } = useGetAllServicesQuery({}, { refetchOnMountOrArgChange: false });
 
   const [addService, { isLoading: isAdding }] = useAddServiceMutation();
@@ -32,7 +32,7 @@ const ServiceManagement: React.FC = () => {
       await addService(newService).unwrap();
       setIsSuccessModalOpen(true);
       setIsAddModalOpen(false);
-      refetch(); // Refetch the data after adding a new service
+      refetch();
     } catch (error) {
       console.error("Error adding service:", error);
       alert("Failed to add service.");
@@ -45,75 +45,83 @@ const ServiceManagement: React.FC = () => {
       await deleteService(deleteServiceId).unwrap();
       setIsDeleteModalOpen(false);
       setIsSuccessModalOpen(true);
-      refetch(); // Refetch the data after deleting a service
+      refetch();
     } catch (error) {
       console.error("Error deleting service:", error);
       alert("Failed to delete service.");
     }
   };
 
-  if (isLoading) return <p>Loading services...</p>;
-  if (isError) return <p>Failed to load services.</p>;
+  if (isLoading) return <p className="text-gray-800 dark:text-gray-300">Loading services...</p>;
+  if (isError) return <p className="text-red-500 dark:text-red-400">Failed to load services.</p>;
 
   return (
-    <div>
+    <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md transition-colors">
+      {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold text-blue-600">
+        <h2 className="text-2xl font-semibold text-blue-600 dark:text-blue-400">
           Service Management
         </h2>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded"
+          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition"
         >
           Add Service
         </button>
       </div>
 
-      <table className="min-w-full border-collapse border border-gray-300">
-        <thead>
-          <tr>
-            <th className="border border-gray-300 px-4 py-2">Name</th>
-            <th className="border border-gray-300 px-4 py-2">Description</th>
-            <th className="border border-gray-300 px-4 py-2">Price</th>
-            <th className="border border-gray-300 px-4 py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {servicesData?.data.map((service: TService) => (
-            <tr key={service._id}>
-              <td className="border border-gray-300 px-4 py-2">
-                {service.name}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {service.description}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                ${service.price}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                <div className="flex flex-col sm:flex-row justify-center gap-2">
-                  <Link
-                    to={`/update-service/${service._id}`}
-                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-center"
-                  >
-                    Update
-                  </Link>
-                  <button
-                    onClick={() => {
-                      setDeleteServiceId(service._id as string);
-                      setIsDeleteModalOpen(true);
-                    }}
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-center"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </td>
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-700">
+          <thead className="bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-300">
+            <tr>
+              <th className="border border-gray-300 dark:border-gray-700 px-4 py-2">Name</th>
+              <th className="border border-gray-300 dark:border-gray-700 px-4 py-2">Description</th>
+              <th className="border border-gray-300 dark:border-gray-700 px-4 py-2">Price</th>
+              <th className="border border-gray-300 dark:border-gray-700 px-4 py-2">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {servicesData?.data.map((service: TService) => (
+              <tr
+                key={service._id}
+                className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+              >
+                <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-gray-800 dark:text-gray-300">
+                  {service.name}
+                </td>
+                <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-gray-800 dark:text-gray-300">
+                  {service.description}
+                </td>
+                <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-gray-800 dark:text-gray-300">
+                  ${service.price}
+                </td>
+                <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">
+                  <div className="flex flex-col sm:flex-row justify-center gap-2">
+                    <Link
+                      to={`/admin-panel/all-services/${service._id}`}
+                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-center transition"
+                    >
+                      Update
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setDeleteServiceId(service._id as string);
+                        setIsDeleteModalOpen(true);
+                      }}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-center transition"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
+      {/* Modals */}
       {isAddModalOpen && (
         <AddService
           onClose={() => setIsAddModalOpen(false)}

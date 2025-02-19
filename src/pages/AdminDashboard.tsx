@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import AdminSidebar from "@/components/AdminSidebar";
+import { Menu, X, Sun, Moon } from "lucide-react";
 
-import { Menu, X, Sun, Moon,  } from "lucide-react";
-import UserSidebar from "@/components/UserSiderbar";
-
-const UserDashboard: React.FC = () => {
+const AdminDashboard: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
@@ -28,7 +27,7 @@ const UserDashboard: React.FC = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-64"
         }`}
       >
-        <UserSidebar />
+        <AdminSidebar />
       </div>
 
       {/* Main Content Area */}
@@ -43,7 +42,7 @@ const UserDashboard: React.FC = () => {
               {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
             <h1 className="text-lg font-semibold ml-4 text-gray-800 dark:text-gray-200">
-              My Dashboard
+              Admin Dashboard
             </h1>
           </div>
 
@@ -65,4 +64,4 @@ const UserDashboard: React.FC = () => {
   );
 };
 
-export default UserDashboard;
+export default AdminDashboard;
