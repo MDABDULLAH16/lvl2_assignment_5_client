@@ -1,50 +1,56 @@
-# React + TypeScript + Vite
+# SparkWave - Car Washing Booking System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🚗 Overview
+SparkWave is an online car washing booking system that allows users to select time slots, book services, and make payments securely via AmmarPay. The system includes separate user and admin dashboards for booking and payment management.
 
-Currently, two official plugins are available:
+## 🚀 Live Demo
+🔗 [Live Site](https://sparkwave-web.vercel.app/)
+🔗 [Client Repository](https://github.com/MDABDULLAH16/lvl2_assignment_5_client)
+🔗 [Server Repository](https://github.com/MDABDULLAH16/lvl2_assignment_5_server)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠 Technologies Used
+- **Frontend**: React, Redux, Tailwind CSS
+- **Backend**: expressJs,mongoose
+- **Payments**: AmmarPay
 
-## Expanding the ESLint configuration
+## 🔑 Features
+- User authentication with Firebase
+- Book car washing services by selecting available time slots
+- Secure online payments via AmmarPay
+- Admin dashboard for managing bookings and payments
+- Responsive UI with Tailwind CSS
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## 📌 Installation & Setup
+### 🔹 Prerequisites
+- Node.js & npm installed
+- AmmarPay API credentials
 
-- Configure the top-level `parserOptions` property like this:
+### 🔹 Steps to Run
+#### Frontend Setup
+```bash
+# Clone the client repository
+git clone <client-repo-url>
+cd client
+npm install
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+# Create a .env file and add:
+REACT_APP_FIREBASE_CONFIG=your_firebase_config
+REACT_APP_AMMARPAY_API_KEY=your_api_key
+
+# Start the development server
+npm start
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## 🎯 Usage
+- Users can sign in and book car washing services.
+- Admins can view and manage all bookings and payments.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## 📄 License
+This project is open-source and available under the MIT License.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## 🤝 Contributing
+Pull requests are welcome! For major changes, please open an issue first to discuss.
+
+---
+### 📧 Contact
+For any inquiries, reach out at **mdabdullah161036@gmail.com**
